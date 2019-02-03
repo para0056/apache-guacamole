@@ -91,6 +91,7 @@ nginx=0
 ssl=0
 mysql=0
 guacamole=0
+scripterror=0
 export guacamole_version="1.0.0"
 export download_location="http://apache.org/dyn/closer.cgi?action=download&filename=guacamole/${guacamole_version}"
 
@@ -141,32 +142,32 @@ fi
 ## nginx-install.sh present
 if [ ! -f ./nginx-install.sh ]; then
     echo -e "./nginx-install.sh not found."
-    exit 1
+    scripterror=1
 fi
 
 ## nginx-ssl-install.sh present
 if [ ! -f ./nginx-ssl-install.sh ]; then
     echo -e "./nginx-ssl-install.sh not found."
-    exit 1
+    scripterror=1
 fi
 
 ## mysql-install.sh present
 if [ ! -f ./mysql-install.sh ]; then
     echo -e "./mysql-install.sh not found."
-    exit 1
+    scripterror=1
 fi
 
 ## guacamole-install.sh present
 if [ ! -f ./guacamole-install.sh ]; then
     echo -e "./guacamole-install.sh not found."
-    exit 1
+    scripterror=1
 fi
 
 ## --ssl-email && --ssl-domain empty not empty with --ssl
 if [ "$nginx" -eq "1" ] && [ "$ssl" -eq "1" ]; then
     if [ -z "$ssl_email" ] || [ -z "$ssl_domain" ]; then
         echo -e "--ssl specified but --ssl-email || --ssl-domain empty."
-        exit 1
+        scripterror=1
     fi
 fi
 
@@ -174,10 +175,15 @@ fi
 if [ "$mysql" -eq "1" ]; then
     if [ -z "$mysql_root_pwd" ] || [ -z "$mysql_db_name" ] || [ -z "$mysql_db_user" ] || [ -z "$mysql_db_user_pwd" ]; then
         echo -e "--mysql specified but --mysql-root-pwd || --mysql-db-name || --mysql-db-user || --mysql-db-user-pwd empty."
-        exit 1
+        scripterror=1
     fi
 fi
 
+## Exit on any script errors
+if [ $scripterror -eq 1]; then
+    exit 1
+fi
+ 
 # Proceed with the installation of Apache Guacamole with the following options
 echo -e "entrypoint.sh executed with the following options:"
 echo -e "--guacamole=$guacamole"
