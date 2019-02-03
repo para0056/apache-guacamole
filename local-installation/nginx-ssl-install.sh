@@ -1,41 +1,43 @@
 #!/bin/bash
 
 # ===================================================================
-# Purpose:      An automation script to install a Let's Encrypt SSL certificate support of Apache Guacamole.
+# Purpose:      An automation script to install a Let's Encrypt SSL certificate into Nginx in support of Apache Guacamole.
 # Details:      This script automates the installation of a Let's Encrypt SSL certificate into Nginx.
 # Github:       https://github.com/jasonvriends
 # ===================================================================
-# Syntax:
+#
+# ./nginx-ssl-install.sh [(--help)] [(--ssl-email) string] [(--ssl-domain) string]
+#
+# Options:
 #
 # --help                     : Displays this help information.
 # --ssl-email string         : email address used for Let's Encrypt renewal reminders.
 # --ssl-domain string        : the domain name used to generate the certificate signing request.
 # 
-# Examples: 
+# Usage example(s): 
 #
-#   ./nginx-ssl-install.sh --ssl-email address@domain.com --ssl-domain domain.com
+# ./nginx-ssl-install.sh --ssl-email johndoe@gmail.com --ssl-domain mydomain.com
 # ===================================================================
 
 # Define help function
 function help(){
-    echo "nginx-ssl-install.sh - An automation script to install a Let's Encrypt SSL certificate support of Apache Guacamole.";
-    echo "";
-    echo "This script automates the installation of a Let's Encrypt SSL certificate into Nginx.";
-    echo "";
-    echo "Usage example:";
-    echo "apache-guacamole [(--help)] [(--ssl-email) string] [(--ssl-domain) string]";
-    echo "";
-    echo "Options:";
-    echo "--help: Displays this help information.";
-    echo "--ssl-email string: email address used for Let's Encrypt renewal reminders.";
-    echo "--ssl-domain string: the domain name used to generate the certificate signing request.";
-    echo "";
-    echo "Examples:";
-    echo "";
-    echo "./nginx-ssl-install.sh --ssl-email address@domain.com --ssl-domain domain.com";
-    exit 1;
+    echo "nginx-ssl-install.sh - An automation script to install a Let's Encrypt SSL certificate into Nginx in support of Apache Guacamole."
+    echo ""
+    echo "This script automates the installation of a Let's Encrypt SSL certificate into Nginx."
+    echo ""
+    echo "./nginx-ssl-install.sh [(--help)] [(--ssl-email) string] [(--ssl-domain) string]"
+    echo ""
+    echo "Options:"
+    echo "--help: Displays this help information."
+    echo "--ssl-email string: email address used for Let's Encrypt renewal reminders."
+    echo "--ssl-domain string: the domain name used to generate the certificate signing request."
+    echo ""
+    echo "Usage example:"
+    echo "./nginx-ssl-install.sh --ssl-email johndoe@gmail.com --ssl-domain mydomain.com"
+    exit 1
 }
 
+# Initalize variables.
 while [ "$1" != "" ]; do
     case $1 in
         --help )                help
@@ -50,11 +52,17 @@ while [ "$1" != "" ]; do
     shift
 done
 
+# Check for empty positional parameters
+if [ -z "$ssl_email" ] || [ -z "$ssl_domain" ]; then
+    echo "Error: --ssl-email or --ssl-domain empty."
+    exit 1
+fi
+
 # Proceed with the installation of Apache Guacamole with the following options
-echo "$(date "+%F %T") nginx-ssl-install.sh executed with the following options:";
-echo "--ssl-email=$ssl_email";
-echo "--ssl-domain=$ssl_domain";
-echo "";
+echo "$(date "+%F %T") nginx-ssl-install.sh executed with the following options:"
+echo "--ssl-email=$ssl_email"
+echo "--ssl-domain=$ssl_domain"
+echo ""
 
 # Certbot
 
@@ -92,11 +100,11 @@ echo "    }" >> /etc/nginx/sites-available/apache-guacamole
 echo " " >> /etc/nginx/sites-available/apache-guacamole
 echo "}" >> /etc/nginx/sites-available/apache-guacamole
 
-# Stop Nginx
+## Stop Nginx
 systemctl stop nginx
 
-# Generate and Install a Let's Encrypt SSL certificate into Nginx
-certbot --nginx -n --email $ssl_email -d $ssl_domain --agree-tos --redirect --hsts
+## Generate and Install a Let's Encrypt SSL certificate for Nginx
+certbot --nginx -n --email $ssl_email --domain $ssl_domain --agree-tos --redirect --hsts
 
-# Start Nginx
+## Start Nginx
 systemctl start nginx

@@ -5,14 +5,40 @@
 # Details:      This script automates the installation Nginx.
 # Github:       https://github.com/jasonvriends
 # ===================================================================
-# Syntax:
+# Options:
 #
-# No arguments are required.
+# --help                     : Displays this help information.
 # 
-# Examples: 
+# Usage example(s): 
 #
 # ./nginx-install.sh
 # ===================================================================
+
+# Define help function
+function help(){
+    echo "nginx-install.sh - An automation script to install Nginx in support of Apache Guacamole."
+    echo ""
+    echo "This script automates the installation Nginx."
+    echo ""
+    echo "nginx-install.sh [(--help)]"
+    echo ""
+    echo "Options:"
+    echo "--help: Displays this help information."
+    echo ""
+    echo "Usage examples:"
+    echo ""
+    echo "./nginx-install.sh"
+    exit 1
+}
+
+# Initalize variables.
+while [ "$1" != "" ]; do
+    case $1 in
+        --help )                help
+                                ;;
+    esac
+    shift
+done
 
 # Update package lists
 apt-get update
