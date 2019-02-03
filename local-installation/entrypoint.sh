@@ -157,11 +157,23 @@ if [ "$nginx" -eq "1" ]; then
 
     # Check for installation script
     if [ ! -f ./nginx-install.sh ]; then
-        echo -e "./nginx-install.sh not found."
-        exit 1
+
+        echo -e "./nginx-install.sh not found. Downloading from https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/nginx-install.sh"
+
+            wget -q --show-progress -O "https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/nginx-install.sh"
+            if [ $? -ne 0 ]; then
+                echo "Failed to download https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/nginx-install.sh"
+                exit 1
+            else
+                ./nginx-install.sh
+                echo -e ""
+            fi
+
     else
+
         ./nginx-install.sh
         echo -e ""
+
     fi
 
 fi
@@ -179,11 +191,23 @@ if [ "$nginx" -eq "1" ] && [ "$ssl" -eq "1" ]; then
 
     # Check for installation script
     if [ ! -f ./nginx-ssl-install.sh ]; then
-        echo -e "./nginx-ssl-install.sh not found."
-        exit 1
+
+        echo -e "./nginx-ssl-install.sh not found. Downloading from https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/nginx-ssl-install.sh"
+
+            wget -q --show-progress -O "https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/nginx-ssl-install.sh"
+            if [ $? -ne 0 ]; then
+                echo "Failed to download https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/nginx-ssl-install.sh"
+                exit 1
+            else
+                ./nginx-ssl-install.sh --ssl-email "$ssl_email" --ssl-domain "$ssl_domain"
+                echo -e ""
+            fi
+
     else
+
         ./nginx-ssl-install.sh --ssl-email "$ssl_email" --ssl-domain "$ssl_domain"
         echo -e ""
+
     fi
 
 fi
@@ -201,10 +225,22 @@ if [ "$mysql" -eq "1" ]; then
 
     # Check for installation script
     if [ ! -f ./mysql-install.sh ]; then
-        echo -e "./mysql-install.sh not found."
-        exit 1
+
+        echo -e "./mysql-install.sh not found. Downloading from https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/mysql-install.sh"
+
+            wget -q --show-progress -O "https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/mysql-install.sh"
+            if [ $? -ne 0 ]; then
+                echo "Failed to download https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/mysql-install.sh"
+                exit 1
+            else
+                ./mysql-install.sh --mysql-root-pwd "$mysql_root_pwd" --mysql-db-name "$mysql_db_name" --mysql-db-user "$mysql_db_user" --mysql-db-user-pwd "$mysql_db_user_pwd"
+                echo -e ""
+            fi
+
     else
+
         ./mysql-install.sh --mysql-root-pwd "$mysql_root_pwd" --mysql-db-name "$mysql_db_name" --mysql-db-user "$mysql_db_user" --mysql-db-user-pwd "$mysql_db_user_pwd"
+
         echo -e ""
     fi
 
@@ -223,11 +259,23 @@ echo -e "Installing Apache Guacamole"
 
     # Check for installation script
     if [ ! -f ./guacamole-install.sh ]; then
-        echo -e "./guacamole-install.sh not found."
-        exit 1
+
+        echo -e "./guacamole-install.sh not found. Downloading from https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/guacamole-install.sh"
+
+            wget -q --show-progress -O "https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/guacamole-install.sh"
+            if [ $? -ne 0 ]; then
+                echo "Failed to download https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/guacamole-install.sh"
+                exit 1
+            else
+                ./guacamole-install.sh"
+                echo -e ""
+            fi        
+
     else
+
         ./guacamole-install.sh"
         echo -e ""
+
     fi
 
 fi
