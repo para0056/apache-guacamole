@@ -37,7 +37,13 @@ function help(){
     exit 1
 }
 
-# Initalize variables.
+# Verify variables
+if [ -z $apache_guacamole_version ] [ -z $download_location ]; then
+    echo "ERROR: exported variables from entrypoint.sh missing."
+    exit 1
+fi
+
+# Read script arguments
 while [ "$1" != "" ]; do
     case $1 in
         --help )                help
@@ -54,7 +60,7 @@ done
 
 # Check for empty positional parameters
 if [ -z "$ssl_email" ] || [ -z "$ssl_domain" ]; then
-    echo "Error: --ssl-email or --ssl-domain empty."
+    echo "ERROR: --ssl-email and/or --ssl-domain empty."
     exit 1
 fi
 

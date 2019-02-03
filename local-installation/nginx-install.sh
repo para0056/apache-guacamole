@@ -2,7 +2,7 @@
 
 # ===================================================================
 # Purpose:      An automation script to install Nginx in support of Apache Guacamole.
-# Details:      This script automates the installation Nginx.
+# Details:      This script automates the installation of Nginx.
 # Github:       https://github.com/jasonvriends
 # ===================================================================
 # Options:
@@ -18,7 +18,7 @@
 function help(){
     echo "nginx-install.sh - An automation script to install Nginx in support of Apache Guacamole."
     echo ""
-    echo "This script automates the installation Nginx."
+    echo "This script automates the installation of Nginx."
     echo ""
     echo "nginx-install.sh [(--help)]"
     echo ""
@@ -31,7 +31,13 @@ function help(){
     exit 1
 }
 
-# Initalize variables.
+# Verify variables
+if [ -z $apache_guacamole_version ] [ -z $download_location ]; then
+    echo "ERROR: exported variables from entrypoint.sh missing."
+    exit 1
+fi
+
+# Read script arguments
 while [ "$1" != "" ]; do
     case $1 in
         --help )                help
