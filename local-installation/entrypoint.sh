@@ -27,21 +27,21 @@
 # Examples: 
 #
 #   Apache Guacamole: standalone
-#   entrypoint.sh
+#   ./entrypoint.sh
 #
 #   Apache Guacamole: standalone + mySQL authentication)
-#   entrypoint.sh --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2
+#   ./entrypoint.sh --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2
 #
 #   Apache Guacamole: Nginx + mySQL authentication
-#   entrypoint.sh --nginx --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2
+#   ./entrypoint.sh --nginx --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2
 #
 #   Apache Guacamole: Nginx + Let's Encrypt SSL + mySQL authentication
-#   entrypoint.sh --nginx --ssl --ssl-email address@domain.com --ssl-domain domain.com --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2
+#   ./entrypoint.sh --nginx --ssl --ssl-email address@domain.com --ssl-domain domain.com --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2
 # ===================================================================
 
 # Define help function
 function help(){
-    echo "Apache Guacamole - An automation script for installing Apache Guacamole and its required components.";
+    echo "entrypoint.sh - An automation script for installing Apache Guacamole and its required components.";
     echo "";
     echo "This script automates the installation of the following components:";
     echo "- Nginx (reverse proxy for Apache Guacamole)";
@@ -69,16 +69,16 @@ function help(){
     echo "Examples:";
     echo "";
     echo "Apache Guacamole: standalone";
-    echo "entrypoint.sh";
+    echo "./entrypoint.sh";
     echo "";
     echo "Apache Guacamole: standalone + mySQL authentication)";
-    echo "entrypoint.sh --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2";
+    echo "./entrypoint.sh --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2";
     echo "";
     echo "Apache Guacamole: Nginx + mySQL authentication";
-    echo "entrypoint.sh --nginx --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2";
+    echo "./entrypoint.sh --nginx --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2";
     echo "";
     echo "Apache Guacamole: Nginx + Let's Encrypt SSL + mySQL authentication";
-    echo "entrypoint.sh --nginx --ssl --ssl-email address@domain.com --ssl-domain domain.com --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2";
+    echo "./entrypoint.sh --nginx --ssl --ssl-email address@domain.com --ssl-domain domain.com --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2";
     exit 1;
 }
 
@@ -117,8 +117,6 @@ while [ "$1" != "" ]; do
     esac
     shift
 done
-
-echo "${foo@Q}";
 
 # Proceed with the installation of Apache Guacamole with the following options
 echo "$(date "+%F %T") entrypoint.sh executed with the following options:";
