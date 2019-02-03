@@ -180,7 +180,7 @@ if [ "$mysql" -eq "1" ]; then
 fi
 
 ## Exit on any script errors
-if [ $scripterror -eq 1]; then
+if [ $scripterror -eq "1"]; then
     exit 1
 fi
  
