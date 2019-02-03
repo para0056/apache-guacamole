@@ -32,7 +32,7 @@ function help(){
 }
 
 # Verify variables
-if [ -z $apache_guacamole_version ] [ -z $download_location ]; then
+if [ -z $guacamole_version ] [ -z $download_location ]; then
     echo "ERROR: exported variables from entrypoint.sh missing."
     exit 1
 fi
@@ -109,44 +109,44 @@ else
 fi
 
 # Download Apache Guacamole server
-if [ ! -f guacamole-server-${apache_guacamole_version}.tar.gz ]; then
+if [ ! -f guacamole-server-${guacamole_version}.tar.gz ]; then
 
-    wget -q --show-progress -O guacamole-server-${apache_guacamole_version}.tar.gz ${download_location}/binary/guacamole-server-${apache_guacamole_version}.tar.gz
+    wget -q --show-progress -O guacamole-server-${guacamole_version}.tar.gz ${download_location}/binary/guacamole-server-${guacamole_version}.tar.gz
     if [ $? -ne 0 ]; then
-        echo "Failed to download guacamole-server-${apache_guacamole_version}.tar.gz"
-        echo "${download_location}/binary/guacamole-server-${apache_guacamole_version}.tar.gz"
+        echo "Failed to download guacamole-server-${guacamole_version}.tar.gz"
+        echo "${download_location}/binary/guacamole-server-${guacamole_version}.tar.gz"
         exit
     fi
 
     ## Extract Guacamole files
-    tar -xzf guacamole-server-${apache_guacamole_version}.tar.gz
+    tar -xzf guacamole-server-${guacamole_version}.tar.gz
 
 fi
 
 # Download Apache Guacamole client
-if [ ! -f guacamole-guacamole-${apache_guacamole_version}.war ]; then
+if [ ! -f guacamole-guacamole-${guacamole_version}.war ]; then
 
-    wget -q --show-progress -O guacamole-guacamole-${apache_guacamole_version}.war ${download_location}/binary/guacamole-guacamole-${apache_guacamole_version}.war
+    wget -q --show-progress -O guacamole-guacamole-${guacamole_version}.war ${download_location}/binary/guacamole-guacamole-${guacamole_version}.war
     if [ $? -ne 0 ]; then
-        echo "Failed to download guacamole-guacamole-${apache_guacamole_version}.war"
-        echo "${download_location}/binary/guacamole-guacamole-${apache_guacamole_version}.war"
+        echo "Failed to download guacamole-guacamole-${guacamole_version}.war"
+        echo "${download_location}/binary/guacamole-guacamole-${guacamole_version}.war"
         exit
     fi
 
 fi
 
 # Download authentication extension
-if [ ! -f guacamole-auth-jdbc-${apache_guacamole_version}.tar.gz ]; then
+if [ ! -f guacamole-auth-jdbc-${guacamole_version}.tar.gz ]; then
 
-    wget -q --show-progress -O guacamole-auth-jdbc-${apache_guacamole_version}.tar.gz ${download_location}/binary/guacamole-auth-jdbc-${apache_guacamole_version}.tar.gz
+    wget -q --show-progress -O guacamole-auth-jdbc-${guacamole_version}.tar.gz ${download_location}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz
     if [ $? -ne 0 ]; then
-        echo "Failed to download guacamole-auth-jdbc-${apache_guacamole_version}.tar.gz"
-        echo "${download_location}/binary/guacamole-auth-jdbc-${apache_guacamole_version}.tar.gz"
+        echo "Failed to download guacamole-auth-jdbc-${guacamole_version}.tar.gz"
+        echo "${download_location}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz"
         exit
     fi
 
     ## Extract Guacamole files
-    tar -xzf guacamole-auth-jdbc-${apache_guacamole_version}.tar.gz
+    tar -xzf guacamole-auth-jdbc-${guacamole_version}.tar.gz
 
 fi
 
@@ -155,7 +155,7 @@ mkdir -p /etc/guacamole/lib
 mkdir -p /etc/guacamole/extensions
 
 # Install guacd
-cd guacamole-server-${apache_guacamole_version}
+cd guacamole-server-${guacamole_version}
 
 echo -e "Building Guacamole with GCC $(gcc --version | head -n1 | grep -oP '\)\K.*' | awk '{print $1}') "
 
@@ -194,11 +194,11 @@ cd ..
 BUILD_FOLDER=$(dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
 # Move files to correct locations
-mv guacamole-${apache_guacamole_version}.war /etc/guacamole/guacamole.war
+mv guacamole-${guacamole_version}.war /etc/guacamole/guacamole.war
 ln -s /etc/guacamole/guacamole.war /var/lib/${TOMCAT}/webapps/
 ln -s /usr/local/lib/freerdp/guac*.so /usr/lib/${BUILD_FOLDER}/freerdp/
 ln -s /usr/share/java/mysql-connector-java.jar /etc/guacamole/lib/
-cp guacamole-auth-jdbc-${apache_guacamole_version}/mysql/guacamole-auth-jdbc-mysql-${apache_guacamole_version}.jar /etc/guacamole/extensions/
+cp guacamole-auth-jdbc-${guacamole_version}/mysql/guacamole-auth-jdbc-mysql-${guacamole_version}.jar /etc/guacamole/extensions/
 
 # restart tomcat
 echo -e "Restarting tomcat..."

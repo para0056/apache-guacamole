@@ -43,7 +43,7 @@ function help(){
 }
 
 # Verify variables
-if [ -z $apache_guacamole_version ] [ -z $download_location ]; then
+if [ -z $guacamole_version ] [ -z $download_location ]; then
     echo "ERROR: exported variables from entrypoint.sh missing."
     exit 1
 fi
@@ -106,22 +106,22 @@ echo $sql_query | mysql -u root -p"$mysql_root_pwd"
 ## apply database schema
 
 ### download jdbc authentication extension
-if [ ! -f guacamole-auth-jdbc-${apache_guacamole_version}.tar.gz ]; then
+if [ ! -f guacamole-auth-jdbc-${guacamole_version}.tar.gz ]; then
 
-    wget -q --show-progress -O guacamole-auth-jdbc-${apache_guacamole_version}.tar.gz ${download_location}/binary/guacamole-auth-jdbc-${apache_guacamole_version}.tar.gz
+    wget -q --show-progress -O guacamole-auth-jdbc-${guacamole_version}.tar.gz ${download_location}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz
     if [ $? -ne 0 ]; then
-        echo "Failed to download guacamole-auth-jdbc-${apache_guacamole_version}.tar.gz"
-        echo "${download_location}/binary/guacamole-auth-jdbc-${apache_guacamole_version}.tar.gz"
+        echo "Failed to download guacamole-auth-jdbc-${guacamole_version}.tar.gz"
+        echo "${download_location}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz"
         exit
     fi
 
 fi
 
 ### Extract database schema
-tar -xzf guacamole-auth-jdbc-${apache_guacamole_version}.tar.gz
+tar -xzf guacamole-auth-jdbc-${guacamole_version}.tar.gz
 
 ### Apply database schema
-cat guacamole-auth-jdbc-${apache_guacamole_version}/mysql/schema/*.sql | mysql -u root -p"$mysql_root_pwd" "$mysql_db_name"
+cat guacamole-auth-jdbc-${guacamole_version}/mysql/schema/*.sql | mysql -u root -p"$mysql_root_pwd" "$mysql_db_name"
 
 # Configure guacamole.properties
 echo "mysql-hostname: localhost" >> /etc/guacamole/guacamole.properties

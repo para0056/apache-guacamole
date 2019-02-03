@@ -12,12 +12,12 @@
 # Github:       https://github.com/jasonvriends
 # ===================================================================
 #
-# entrypoint.sh [(--help)] [(--apache-guacamole)] [(--nginx)] [(--ssl)] [(--ssl-email) string] [(--ssl-domain) string] [(--mysql)] [(--mysql-root-pwd) string] [(--mysql-db-name) string] [(--mysql-db-user) string] [(--mysql-db-user-pwd) string]
+# entrypoint.sh [(--help)] [(--guacamole)] [(--nginx)] [(--ssl)] [(--ssl-email) string] [(--ssl-domain) string] [(--mysql)] [(--mysql-root-pwd) string] [(--mysql-db-name) string] [(--mysql-db-user) string] [(--mysql-db-user-pwd) string]
 #
 # Options:
 #
 # --help                       : Displays this help information.
-# --apache-guacamole           : installs Apache Guacamole.
+# --guacamole           : installs Apache Guacamole.
 # --nginx                      : installs nginx and fronts Apache Guacamole with a friendly url.
 # --ssl                        : installs a Let's Encrypt SSL certificate on Nginx (requires Nginx option).
 #   --ssl-email string         : email address used for Let's Encrypt renewal reminders.
@@ -31,16 +31,16 @@
 # Usage example(s): 
 #
 # Apache Guacamole: standalone
-# ./entrypoint.sh --apache-guacamole"
+# ./entrypoint.sh --guacamole"
 #
 # Apache Guacamole: standalone + mySQL authentication)
-# ./entrypoint.sh --apache-guacamole" --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2
+# ./entrypoint.sh --guacamole" --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2
 #
 # Apache Guacamole: Nginx + mySQL authentication
-# ./entrypoint.sh --apache-guacamole" --nginx --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2
+# ./entrypoint.sh --guacamole" --nginx --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2
 #
 # Apache Guacamole: Nginx + Let's Encrypt SSL + mySQL authentication
-# ./entrypoint.sh --apache-guacamole" --nginx --ssl --ssl-email address@domain.com --ssl-domain domain.com --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2
+# ./entrypoint.sh --guacamole" --nginx --ssl --ssl-email address@domain.com --ssl-domain domain.com --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2
 # ===================================================================
 
 # Define help function
@@ -55,11 +55,11 @@ function help(){
     echo -e "- Guacd (the server component of Apache Guacamole)"
     echo -e "- Various other dependencies"
     echo -e ""
-    echo -e "entrypoint.sh [(--help)] [(--apache-guacamole)] [(--nginx)] [(--ssl)] [(--ssl-email) string] [(--ssl-domain) string] [(--mysql)] [(--mysql-root-pwd) string] [(--mysql-db-name) string] [(--mysql-db-user) string] [(--mysql-db-user-pwd) string]"
+    echo -e "entrypoint.sh [(--help)] [(--guacamole)] [(--nginx)] [(--ssl)] [(--ssl-email) string] [(--ssl-domain) string] [(--mysql)] [(--mysql-root-pwd) string] [(--mysql-db-name) string] [(--mysql-db-user) string] [(--mysql-db-user-pwd) string]"
     echo -e ""
     echo -e "Options:"
     echo -e "--help: Displays this help information."
-    echo -e "--apache-guacamole: installs Apache Guacamole"
+    echo -e "--guacamole: installs Apache Guacamole"
     echo -e "--nginx: installs nginx and fronts Apache Guacamole with a friendly url."
     echo -e "--ssl: installs a Let's Encrypt SSL certificate on Nginx (requires Nginx option)."
     echo -e "  --ssl-email string: email address used for Let's Encrypt renewal reminders."
@@ -73,16 +73,16 @@ function help(){
     echo -e "Usage examples:"
     echo -e ""
     echo -e "Apache Guacamole: standalone"
-    echo -e "./entrypoint.sh --apache-guacamole"
+    echo -e "./entrypoint.sh --guacamole"
     echo -e ""
     echo -e "Apache Guacamole: standalone + mySQL authentication)"
-    echo -e "./entrypoint.sh --apache-guacamole --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2"
+    echo -e "./entrypoint.sh --guacamole --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2"
     echo -e ""
     echo -e "Apache Guacamole: Nginx + mySQL authentication"
-    echo -e "./entrypoint.sh --apache-guacamole --nginx --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2"
+    echo -e "./entrypoint.sh --guacamole --nginx --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2"
     echo -e ""
     echo -e "Apache Guacamole: Nginx + Let's Encrypt SSL + mySQL authentication"
-    echo -e "./entrypoint.sh --apache-guacamole --nginx --ssl --ssl-email address@domain.com --ssl-domain domain.com --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2"
+    echo -e "./entrypoint.sh --guacamole --nginx --ssl --ssl-email address@domain.com --ssl-domain domain.com --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2"
     exit 1
 }
 
@@ -90,55 +90,97 @@ function help(){
 nginx=0
 ssl=0
 mysql=0
-apache_guacamole=0
-export apache_guacamole_version="1.0.0"
-export download_location="http://apache.org/dyn/closer.cgi?action=download&filename=guacamole/${apache_guacamole_version}"
+guacamole=0
+export guacamole_version="1.0.0"
+export download_location="http://apache.org/dyn/closer.cgi?action=download&filename=guacamole/${guacamole_version}"
 
 # Read script arguments
 while [ "$1" != "" ]; do
     case $1 in
-        --help              )           help
-                                        ;;
-        --apache-guacamole  )           apache_guacamole=1
-                                        ;;
-        --apache-guacamole-version  )   shift
-                                        apache_guacamole_version="$1"
-                                        ;;
-        --nginx             )           nginx=1
-                                        ;;
-        --ssl               )           ssl=1
-                                        ;;
-        --ssl-email         )           shift 
-                                        ssl_email="$1"
-                                        ;;
-        --ssl-domain        )           shift 
-                                        ssl_domain="$1"
-                                        ;;
-        --mysql             )           mysql=1 ;;
-        --mysql-root-pwd    )           shift 
-                                        mysql_root_pwd="$1"
-                                        ;;
-        --mysql-db-name     )           shift 
-                                        mysql_db_name="$1"
-                                        ;;
-        --mysql-db-user     )           shift 
-                                        mysql_db_user="$1"
-                                        ;;
-        --mysql-db-user-pwd )           shift 
-                                        mysql_db_user_pwd="$1"
-                                        s6;;
+        --help              )   help
+                                ;;
+        --guacamole         )   guacamole=1
+                                ;;
+        --guacamole-version )   shift
+                                guacamole_version="$1"
+                                ;;
+        --nginx             )   nginx=1
+                                ;;
+        --ssl               )   ssl=1
+                                ;;
+        --ssl-email         )   shift 
+                                ssl_email="$1"
+                                ;;
+        --ssl-domain        )   shift 
+                                ssl_domain="$1"
+                                ;;
+        --mysql             )   mysql=1 ;;
+        --mysql-root-pwd    )   shift 
+                                mysql_root_pwd="$1"
+                                ;;
+        --mysql-db-name     )   shift 
+                                mysql_db_name="$1"
+                                ;;
+        --mysql-db-user     )   shift 
+                                mysql_db_user="$1"
+                                ;;
+        --mysql-db-user-pwd )   shift 
+                                mysql_db_user_pwd="$1"
+                                ;;
     esac
     shift
 done
 
-# Verify variables.
-if [ "$nginx" -eq "0" ] && [ "$mysql" -eq "0" ] && [ "$apache_guacamole" -eq "0" ]; then
+# Verification
+
+## --nginx || --mysql || --guacamole
+if [ "$nginx" -eq "0" ] && [ "$mysql" -eq "0" ] && [ "$guacamole" -eq "0" ]; then
     help
+fi
+
+## nginx-install.sh present
+if [ ! -f ./nginx-install.sh ]; then
+    echo -e "./nginx-install.sh not found."
+    exit 1
+fi
+
+## nginx-ssl-install.sh present
+if [ ! -f ./nginx-ssl-install.sh ]; then
+    echo -e "./nginx-ssl-install.sh not found."
+    exit 1
+fi
+
+## mysql-install.sh present
+if [ ! -f ./mysql-install.sh ]; then
+    echo -e "./mysql-install.sh not found."
+    exit 1
+fi
+
+## guacamole-install.sh present
+if [ ! -f ./guacamole-install.sh ]; then
+    echo -e "./guacamole-install.sh not found."
+    exit 1
+fi
+
+## --ssl-email && --ssl-domain empty not empty with --ssl
+if [ "$nginx" -eq "1" ] && [ "$ssl" -eq "1" ]; then
+    if [ -z "$ssl_email" ] || [ -z "$ssl_domain" ]; then
+        echo -e "--ssl specified but --ssl-email || --ssl-domain empty."
+        exit 1
+    fi
+fi
+
+## --mysql-root-pwd && --mysql-db-name && --mysql-db-user && --mysql-db-user-pwd not empty with --mysql
+if [ "$mysql" -eq "1" ]; then
+    if [ -z "$mysql_root_pwd" ] || [ -z "$mysql_db_name" ] || [ -z "$mysql_db_user" ] || [ -z "$mysql_db_user_pwd" ]; then
+        echo -e "--mysql specified but --mysql-root-pwd || --mysql-db-name || --mysql-db-user || --mysql-db-user-pwd empty."
+        exit 1
+    fi
 fi
 
 # Proceed with the installation of Apache Guacamole with the following options
 echo -e "entrypoint.sh executed with the following options:"
-echo -e "--apache-guacamole=$apache_guacamole"
+echo -e "--guacamole=$guacamole"
 echo -e "--nginx=$nginx"
 echo -e "--ssl=$ssl"
 echo -e "  --ssl-email=$ssl_email"
@@ -152,47 +194,15 @@ echo -e ""
 
 # Install Nginx
 if [ "$nginx" -eq "1" ]; then
-
     echo -e "Installing Nginx."
-
-    # Check for installation script
-    if [ ! -f ./nginx-install.sh ]; then
-
-        echo -e "./nginx-install.sh not found."
-        exit 1
-
-    else
-
-        ./nginx-install.sh
-        echo -e ""
-
-    fi
-
+    ./nginx-install.sh
 fi
 
 # Install Let's Encrypt SSL certificate
 if [ "$nginx" -eq "1" ] && [ "$ssl" -eq "1" ]; then
 
     echo -e "Installing Let's Encrypt SSL certificate."
-
-    # Check for empty positional parameters
-    if [ -z "$ssl_email" ] || [ -z "$ssl_domain" ]; then
-        echo -e "--ssl specified but --ssl-email or --ssl-domain empty."
-        exit 1
-    fi
-
-    # Check for installation script
-    if [ ! -f ./nginx-ssl-install.sh ]; then
-
-        echo -e "./nginx-ssl-install.sh not found."
-        exit 1
-
-    else
-
-        ./nginx-ssl-install.sh --ssl-email "$ssl_email" --ssl-domain "$ssl_domain"
-        echo -e ""
-
-    fi
+    ./nginx-ssl-install.sh --ssl-email "$ssl_email" --ssl-domain "$ssl_domain"
 
 fi
 
@@ -200,50 +210,14 @@ fi
 if [ "$mysql" -eq "1" ]; then
     
     echo -e "Installing mySQL."
-
-    # Check for empty positional parameters
-    if [ -z "$mysql_root_pwd" ] || [ -z "$mysql_db_name" ] || [ -z "$mysql_db_user" ] || [ -z "$mysql_db_user_pwd" ]; then
-        echo -e "--mysql specified but --mysql-root-pwd, --mysql-db-name, --mysql-db-user, or --mysql-db-user-pwd empty."
-        exit 1
-    fi
-
-    # Check for installation script
-    if [ ! -f ./mysql-install.sh ]; then
-
-        echo -e "./mysql-install.sh not found."
-        exit 1
-
-    else
-
-        ./mysql-install.sh --mysql-root-pwd "$mysql_root_pwd" --mysql-db-name "$mysql_db_name" --mysql-db-user "$mysql_db_user" --mysql-db-user-pwd "$mysql_db_user_pwd"
-        echo -e ""
-
-    fi
+    ./mysql-install.sh --mysql-root-pwd "$mysql_root_pwd" --mysql-db-name "$mysql_db_name" --mysql-db-user "$mysql_db_user" --mysql-db-user-pwd "$mysql_db_user_pwd"
 
 fi
 
 # Install Apache Guacamole
-if [ "$apache_guacamole" -eq "1" ]; then
+if [ "$guacamole" -eq "1" ]; then
 
-echo -e "Installing Apache Guacamole"
-
-    # Check for empty positional parameters
-    if [ -z "$apache_guacamole_version" ]; then
-        echo -e "--apache-guacamole specified but --apache-guacamole-version empty."
-        exit 1
-    fi
-
-    # Check for installation script
-    if [ ! -f ./guacamole-install.sh ]; then
-
-        echo -e "./guacamole-install.sh not found."
-        exit 1
-
-    else
-
-        ./guacamole-install.sh
-        echo -e ""
-
-    fi
+    echo -e "Installing Apache Guacamole"
+    ./guacamole-install.sh
 
 fi
