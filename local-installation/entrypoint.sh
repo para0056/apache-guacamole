@@ -161,6 +161,7 @@ if [ "$nginx" -eq "1" ]; then
         echo -e "./nginx-install.sh not found. Downloading from https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/nginx-install.sh"
 
             wget -q --show-progress -O "https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/nginx-install.sh"
+            chmod +x nginx-install.sh
             if [ $? -ne 0 ]; then
                 echo "Failed to download https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/nginx-install.sh"
                 exit 1
@@ -195,6 +196,7 @@ if [ "$nginx" -eq "1" ] && [ "$ssl" -eq "1" ]; then
         echo -e "./nginx-ssl-install.sh not found. Downloading from https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/nginx-ssl-install.sh"
 
             wget -q --show-progress -O "https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/nginx-ssl-install.sh"
+            chmod +x nginx-ssl-install.sh
             if [ $? -ne 0 ]; then
                 echo "Failed to download https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/nginx-ssl-install.sh"
                 exit 1
@@ -229,6 +231,7 @@ if [ "$mysql" -eq "1" ]; then
         echo -e "./mysql-install.sh not found. Downloading from https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/mysql-install.sh"
 
             wget -q --show-progress -O "https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/mysql-install.sh"
+            chmod +x mysql-install.sh
             if [ $? -ne 0 ]; then
                 echo "Failed to download https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/mysql-install.sh"
                 exit 1
@@ -263,6 +266,7 @@ echo -e "Installing Apache Guacamole"
         echo -e "./guacamole-install.sh not found. Downloading from https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/guacamole-install.sh"
 
             wget -q --show-progress -O "https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/guacamole-install.sh"
+            chmod +x guacamole-install.sh
             if [ $? -ne 0 ]; then
                 echo "Failed to download https://raw.githubusercontent.com/jasonvriends/apache-guacamole/master/local-installation/guacamole-install.sh"
                 exit 1
