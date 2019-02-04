@@ -37,7 +37,7 @@ function help(){
     exit 1
 }
 
-# Verify variables
+# Verify exported variables
 if [ -z $guacamole_version ] [ -z $download_location ]; then
     echo "ERROR: exported variables from entrypoint.sh missing."
     exit 1

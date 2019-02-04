@@ -42,7 +42,7 @@ function help(){
     exit 1
 }
 
-# Verify variables
+# Verify exported variables
 if [ -z $guacamole_version ] [ -z $download_location ]; then
     echo "ERROR: exported variables from entrypoint.sh missing."
     exit 1
@@ -124,6 +124,7 @@ tar -xzf guacamole-auth-jdbc-${guacamole_version}.tar.gz
 cat guacamole-auth-jdbc-${guacamole_version}/mysql/schema/*.sql | mysql -u root -p"$mysql_root_pwd" "$mysql_db_name"
 
 # Configure guacamole.properties
+mkdir /etc/guacamole
 echo "mysql-hostname: localhost" >> /etc/guacamole/guacamole.properties
 echo "mysql-port: 3306" >> /etc/guacamole/guacamole.properties
 echo "mysql-database: ${mysql_db_name}" >> /etc/guacamole/guacamole.properties
