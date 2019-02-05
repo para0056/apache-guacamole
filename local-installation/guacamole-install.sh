@@ -131,12 +131,12 @@ if [ ! -f guacamole-server-${guacamole_version}.tar.gz ]; then
 fi
 
 # Download Apache Guacamole client
-if [ ! -f guacamole-guacamole-${guacamole_version}.war ]; then
+if [ ! -f guacamole-${guacamole_version}.war ]; then
 
-    wget -q --show-progress -O guacamole-guacamole-${guacamole_version}.war ${download_location}/binary/guacamole-guacamole-${guacamole_version}.war
+    wget -q --show-progress -O ${guacamole_version}.war ${download_location}/binary/guacamole-${guacamole_version}.war
     if [ $? -ne 0 ]; then
-        echo "$(date "+%F %T") ${color_red}Failed to download guacamole-guacamole-${guacamole_version}.war${color_none}"
-        echo "${download_location}/binary/guacamole-guacamole-${guacamole_version}.war"
+        echo "$(date "+%F %T") ${color_red}Failed to download guacamole-${guacamole_version}.war${color_none}"
+        echo "${download_location}/binary/guacamole-${guacamole_version}.war"
         exit
     fi
 
