@@ -119,7 +119,7 @@ fi
 # Download Apache Guacamole client
 if [ ! -f guacamole-${guacamole_version}.war ]; then
 
-    wget -q --show-progress -O ${guacamole_version}.war ${download_location}/binary/guacamole-${guacamole_version}.war
+    wget -q --show-progress -O guacamole-${guacamole_version}.war ${download_location}/binary/guacamole-${guacamole_version}.war
 
 fi
 
@@ -137,16 +137,18 @@ mkdir -p /etc/guacamole/extensions
 
 # Install guacd
 echo -e "Building Guacamole with GCC $(gcc --version | head -n1 | grep -oP '\)\K.*' | awk '{print $1}') "
+cd guacamole-server-${guacamole_version}
 
 echo -e "Configuring..."
-guacamole-server-${guacamole_version}/.configure --with-init-dir=/etc/init.d   
+/.configure --with-init-dir=/etc/init.d   
 
 echo -e "Running Make. This might take a few minutes..."
-guacamole-server-${guacamole_version}/make  
+make  
 
 
 echo -e "Running Make Install..."
-guacamole-server-${guacamole_version}/make install  
+make install
+cd..
 
 ldconfig
 systemctl enable guacd
