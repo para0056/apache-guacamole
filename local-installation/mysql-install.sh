@@ -50,7 +50,7 @@ color_green='\033[0;32m'
 color_none='\033[0m'
 
 # Verify exported variables
-if [ -z $guacamole_version ] || [ -z $download_location ] || [ -z $script_path ]; then
+if [ -z "$guacamole_version" ] || [ -z "$download_location" ] || [ -z "$script_path" ] [ -z "$download_path" ]; then
     echo "$(date "+%F %T") ${color_red}exported variables from entrypoint.sh missing.${color_none}"
     exit 1
 fi
@@ -113,11 +113,11 @@ echo $sql_query | mysql -u root -p"$mysql_root_pwd"
 ## apply database schema
 
 ### download jdbc authentication extension
-if [ ! -f $script_path/guacamole-auth-jdbc-${guacamole_version}.tar.gz ]; then
+if [ ! -f $download_path/guacamole-auth-jdbc-${guacamole_version}.tar.gz ]; then
 
-    wget -q --show-progress -O guacamole-auth-jdbc-${guacamole_version}.tar.gz ${download_location}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz
+    wget -q --show-progress -O $download_path/guacamole-auth-jdbc-${guacamole_version}.tar.gz ${download_location}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz
     if [ $? -ne 0 ]; then
-        echo "$(date "+%F %T") ${color_red}Failed to download guacamole-auth-jdbc-${guacamole_version}.tar.gz${color_none}"
+        echo "$(date "+%F %T") ${color_red}Failed to download $download_path/guacamole-auth-jdbc-${guacamole_version}.tar.gz${color_none}"
         echo "$(date "+%F %T") ${color_red}${download_location}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz${color_none}"
         exit
     fi
@@ -125,10 +125,10 @@ if [ ! -f $script_path/guacamole-auth-jdbc-${guacamole_version}.tar.gz ]; then
 fi
 
 ### Extract database schema
-tar -xzf $script_path/guacamole-auth-jdbc-${guacamole_version}.tar.gz
+tar -xzf $download_path/guacamole-auth-jdbc-${guacamole_version}.tar.gz
 
 ### Apply database schema
-cat $script_path/guacamole-auth-jdbc-${guacamole_version}/mysql/schema/*.sql | mysql -u root -p"$mysql_root_pwd" "$mysql_db_name"
+cat $download_path/guacamole-auth-jdbc-${guacamole_version}/mysql/schema/*.sql | mysql -u root -p"$mysql_root_pwd" "$mysql_db_name"
 
 # Configure guacamole.properties
 mkdir /etc/guacamole

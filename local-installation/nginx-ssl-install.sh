@@ -45,7 +45,7 @@ color_green='\033[0;32m'
 color_none='\033[0m'
 
 # Verify exported variables
-if [ -z $guacamole_version ] || [ -z $download_location ] || [ -z $script_path ]; then
+if [ -z "$guacamole_version" ] || [ -z "$download_location" ] || [ -z "$script_path" ] [ -z "$download_path" ]; then
     echo "$(date "+%F %T") ${color_red}exported variables from entrypoint.sh missing.${color_none}"
     exit 1
 fi

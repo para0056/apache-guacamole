@@ -99,6 +99,7 @@ color_blue='\033[0;34m'
 color_red='\033[0;31m'
 color_green='\033[0;32m'
 color_none='\033[0m'
+export download_path=${pwd}
 export script_path="$( dirname "${BASH_SOURCE[0]}" )"
 export guacamole_version="1.0.0"
 export download_location="http://apache.org/dyn/closer.cgi?action=download&filename=guacamole/${guacamole_version}"
