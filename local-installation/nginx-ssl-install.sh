@@ -37,9 +37,16 @@ function help(){
     exit 1
 }
 
+# Initalize variables.
+color_yellow='\033[1;33m'
+color_blue='\033[0;34m'
+color_red='\033[0;31m'
+color_green='\033[0;32m'
+color_none='\033[0m'
+
 # Verify exported variables
-if [ -z $guacamole_version ] [ -z $download_location ]; then
-    echo "ERROR: exported variables from entrypoint.sh missing."
+if [ -z $guacamole_version ] || [ -z $download_location ] || [ -z $script_path ]; then
+    echo "$(date "+%F %T") ${color_red}exported variables from entrypoint.sh missing.${color_none}"
     exit 1
 fi
 

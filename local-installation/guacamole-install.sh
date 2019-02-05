@@ -31,9 +31,16 @@ function help(){
     exit 1
 }
 
+# Initalize variables.
+color_yellow='\033[1;33m'
+color_blue='\033[0;34m'
+color_red='\033[0;31m'
+color_green='\033[0;32m'
+color_none='\033[0m'
+
 # Verify exported variables
-if [ -z $guacamole_version ] [ -z $download_location ]; then
-    echo "ERROR: exported variables from entrypoint.sh missing."
+if [ -z $guacamole_version ] || [ -z $download_location ] || [ -z $script_path ]; then
+    echo "$(date "+%F %T") ${color_red}exported variables from entrypoint.sh missing.${color_none}"
     exit 1
 fi
 
@@ -76,7 +83,7 @@ then
         LIBPNG="libpng12-dev"
     fi
 else
-    echo "Unsupported Distro - Ubuntu or Debian Only"
+    echo "$(date "+%F %T") ${color_red}Unsupported Distro - Ubuntu or Debian Only${color_none}."
     exit 1
 fi
 
@@ -102,33 +109,33 @@ libvorbis-dev libwebp-dev mysql-server mysql-client mysql-common mysql-utilities
 ghostscript wget dpkg-dev
 
 if [ $? -ne 0 ]; then
-    echo -e "Failed"
+    echo -e "$(date "+%F %T") ${color_red}Failed${color_none}"
     exit 1
 else
     echo -e "OK"
 fi
 
 # Download Apache Guacamole server
-if [ ! -f guacamole-server-${guacamole_version}.tar.gz ]; then
+if [ ! -f $script_path/guacamole-server-${guacamole_version}.tar.gz ]; then
 
     wget -q --show-progress -O guacamole-server-${guacamole_version}.tar.gz ${download_location}/binary/guacamole-server-${guacamole_version}.tar.gz
     if [ $? -ne 0 ]; then
-        echo "Failed to download guacamole-server-${guacamole_version}.tar.gz"
+        echo "$(date "+%F %T") ${color_red}Failed to download $script_path/guacamole-server-${guacamole_version}.tar.gz${color_none}"
         echo "${download_location}/binary/guacamole-server-${guacamole_version}.tar.gz"
         exit
     fi
 
     ## Extract Guacamole files
-    tar -xzf guacamole-server-${guacamole_version}.tar.gz
+    tar -xzf $script_path/guacamole-server-${guacamole_version}.tar.gz
 
 fi
 
 # Download Apache Guacamole client
-if [ ! -f guacamole-guacamole-${guacamole_version}.war ]; then
+if [ ! -f $script_path/guacamole-guacamole-${guacamole_version}.war ]; then
 
     wget -q --show-progress -O guacamole-guacamole-${guacamole_version}.war ${download_location}/binary/guacamole-guacamole-${guacamole_version}.war
     if [ $? -ne 0 ]; then
-        echo "Failed to download guacamole-guacamole-${guacamole_version}.war"
+        echo "$(date "+%F %T") ${color_red}Failed to download $script_path/guacamole-guacamole-${guacamole_version}.war${color_none}"
         echo "${download_location}/binary/guacamole-guacamole-${guacamole_version}.war"
         exit
     fi
@@ -136,17 +143,17 @@ if [ ! -f guacamole-guacamole-${guacamole_version}.war ]; then
 fi
 
 # Download authentication extension
-if [ ! -f guacamole-auth-jdbc-${guacamole_version}.tar.gz ]; then
+if [ ! -f $script_path/guacamole-auth-jdbc-${guacamole_version}.tar.gz ]; then
 
     wget -q --show-progress -O guacamole-auth-jdbc-${guacamole_version}.tar.gz ${download_location}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz
     if [ $? -ne 0 ]; then
-        echo "Failed to download guacamole-auth-jdbc-${guacamole_version}.tar.gz"
+        echo "$(date "+%F %T") ${color_red}Failed to download $script_path/guacamole-auth-jdbc-${guacamole_version}.tar.gz${color_none}"
         echo "${download_location}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz"
         exit
     fi
 
     ## Extract Guacamole files
-    tar -xzf guacamole-auth-jdbc-${guacamole_version}.tar.gz
+    tar -xzf $script_path/guacamole-auth-jdbc-${guacamole_version}.tar.gz
 
 fi
 
@@ -155,32 +162,32 @@ mkdir -p /etc/guacamole/lib
 mkdir -p /etc/guacamole/extensions
 
 # Install guacd
-cd guacamole-server-${guacamole_version}
+$script_path/guacamole-server-${guacamole_version}
 
 echo -e "Building Guacamole with GCC $(gcc --version | head -n1 | grep -oP '\)\K.*' | awk '{print $1}') "
 
 echo -e "Configuring..."
-./configure --with-init-dir=/etc/init.d   
+$script_path/guacamole-server-${guacamole_version}/.configure --with-init-dir=/etc/init.d   
 if [ $? -ne 0 ]; then
-    echo -e "Failed. See "
+    echo -e "$(date "+%F %T") ${color_red}Failed.${color_none}"
     exit 1
 else
     echo -e "OK"
 fi
 
 echo -e "Running Make. This might take a few minutes..."
-make  
+$script_path/guacamole-server-${guacamole_version}/make  
 if [ $? -ne 0 ]; then
-    echo -e "Failed. See "
+    echo -e "$(date "+%F %T") ${color_red}Failed.${color_none}"
     exit 1
 else
     echo -e "OK"
 fi
 
 echo -e "Running Make Install..."
-make install  
+$script_path/guacamole-server-${guacamole_version}/make install  
 if [ $? -ne 0 ]; then
-    echo -e "Failed. See "
+    echo -e "$(date "+%F %T") ${color_red}Failed.${color_none}"
     exit 1
 else
     echo -e "OK"
@@ -188,24 +195,23 @@ fi
 
 ldconfig
 systemctl enable guacd
-cd ..
 
 # Get build-folder
 BUILD_FOLDER=$(dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
 # Move files to correct locations
-mv guacamole-${guacamole_version}.war /etc/guacamole/guacamole.war
+mv $script_path/guacamole-${guacamole_version}.war /etc/guacamole/guacamole.war
 ln -s /etc/guacamole/guacamole.war /var/lib/${TOMCAT}/webapps/
 ln -s /usr/local/lib/freerdp/guac*.so /usr/lib/${BUILD_FOLDER}/freerdp/
 ln -s /usr/share/java/mysql-connector-java.jar /etc/guacamole/lib/
-cp guacamole-auth-jdbc-${guacamole_version}/mysql/guacamole-auth-jdbc-mysql-${guacamole_version}.jar /etc/guacamole/extensions/
+cp $script_path/guacamole-auth-jdbc-${guacamole_version}/mysql/guacamole-auth-jdbc-mysql-${guacamole_version}.jar /etc/guacamole/extensions/
 
 # restart tomcat
 echo -e "Restarting tomcat..."
 
 service ${TOMCAT} restart
 if [ $? -ne 0 ]; then
-    echo -e "Failed"
+    echo -e "$(date "+%F %T") ${color_red}Failed${color_none}"
     exit 1
 else
     echo -e "OK"

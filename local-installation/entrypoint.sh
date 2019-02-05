@@ -12,21 +12,22 @@
 # Github:       https://github.com/jasonvriends
 # ===================================================================
 #
-# entrypoint.sh [(--help)] [(--guacamole)] [(--nginx)] [(--ssl)] [(--ssl-email) string] [(--ssl-domain) string] [(--mysql)] [(--mysql-root-pwd) string] [(--mysql-db-name) string] [(--mysql-db-user) string] [(--mysql-db-user-pwd) string]
+# entrypoint.sh [(--help)] [(--guacamole)] [(--guacamole-version string)] [(--nginx)] [(--ssl)] [(--ssl-email) string] [(--ssl-domain) string] [(--mysql)] [(--mysql-root-pwd) string] [(--mysql-db-name) string] [(--mysql-db-user) string] [(--mysql-db-user-pwd) string]
 #
 # Options:
 #
-# --help                       : Displays this help information.
-# --guacamole           : installs Apache Guacamole.
-# --nginx                      : installs nginx and fronts Apache Guacamole with a friendly url.
-# --ssl                        : installs a Let's Encrypt SSL certificate on Nginx (requires Nginx option).
-#   --ssl-email string         : email address used for Let's Encrypt renewal reminders.
-#   --ssl-domain string        : the domain name used to generate the certificate signing request.
-# --mysql                      : installs mySQL for database authentication, load balancing groups, and web-based administration.
-#   --mysql-root-pwd string    : the root mySQL password.
-#   --mysql-db-name string     : mysql database to create for Apache Guacamole.
-#   --mysql-db-user string     : mysql user to assign to the database.
-#   --mysql-db-user-pwd string : mysql user password.
+# --help                        : Displays this help information.
+# --guacamole                   : Installs Apache Guacamole.
+# --guacamole-version           : Specify the Apache Guacamole version (if not specified the default is 1.0.0).
+# --nginx                       : Installs nginx and fronts Apache Guacamole with a friendly url.
+# --ssl                         : Installs a Let's Encrypt SSL certificate into Nginx.
+#   --ssl-email string          : Email address used for Let's Encrypt renewal reminders.
+#   --ssl-domain string         : The domain name used to generate the certificate signing request.
+# --mysql                       : Installs mySQL for database authentication, load balancing groups, and web-based administration.
+#   --mysql-root-pwd string     : The root mySQL password.
+#   --mysql-db-name string      : mySql database to create for Apache Guacamole.
+#   --mysql-db-user string      : mySql user to assign to the database.
+#   --mysql-db-user-pwd string  : mySql user password.
 # 
 # Usage example(s): 
 #
@@ -60,6 +61,7 @@ function help(){
     echo -e "Options:"
     echo -e "--help: Displays this help information."
     echo -e "--guacamole: installs Apache Guacamole"
+    echo -e "--guacamole-version: Specify the Apache Guacamole version (if not specified the default is 1.0.0)."
     echo -e "--nginx: installs nginx and fronts Apache Guacamole with a friendly url."
     echo -e "--ssl: installs a Let's Encrypt SSL certificate on Nginx (requires Nginx option)."
     echo -e "  --ssl-email string: email address used for Let's Encrypt renewal reminders."
@@ -97,7 +99,7 @@ color_blue='\033[0;34m'
 color_red='\033[0;31m'
 color_green='\033[0;32m'
 color_none='\033[0m'
-script_path="$( dirname "${BASH_SOURCE[0]}" )"
+export script_path="$( dirname "${BASH_SOURCE[0]}" )"
 export guacamole_version="1.0.0"
 export download_location="http://apache.org/dyn/closer.cgi?action=download&filename=guacamole/${guacamole_version}"
 
