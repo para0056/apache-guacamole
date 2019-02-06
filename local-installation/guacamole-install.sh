@@ -110,25 +110,19 @@ ghostscript wget dpkg-dev
 
 # Download Apache Guacamole server
 if [ ! -f guacamole-server-${guacamole_version}.tar.gz ]; then
-
-    wget -q --show-progress -O guacamole-server-${guacamole_version}.tar.gz ${download_location}/binary/guacamole-server-${guacamole_version}.tar.gz
+    wget -q --show-progress -O guacamole-server-${guacamole_version}.tar.gz ${download_location}/source/guacamole-server-${guacamole_version}.tar.gz
     tar -xzf guacamole-server-${guacamole_version}.tar.gz
-
 fi
 
 # Download Apache Guacamole client
 if [ ! -f guacamole-${guacamole_version}.war ]; then
-
-    wget -q --show-progress -O guacamole-${guacamole_version}.war ${download_location}/binary/guacamole-${guacamole_version}.war
-
+    wget -q --show-progress -O guacamole-${guacamole_version}.war ${download_location}/source/guacamole-${guacamole_version}.war
 fi
 
 # Download authentication extension
 if [ ! -f guacamole-auth-jdbc-${guacamole_version}.tar.gz ]; then
-
     wget -q --show-progress -O guacamole-auth-jdbc-${guacamole_version}.tar.gz ${download_location}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz
     tar -xzf guacamole-auth-jdbc-${guacamole_version}.tar.gz
-
 fi
 
 # Make directories 
@@ -140,7 +134,7 @@ echo -e "Building Guacamole with GCC $(gcc --version | head -n1 | grep -oP '\)\K
 cd guacamole-server-${guacamole_version}
 
 echo -e "Configuring..."
-/.configure --with-init-dir=/etc/init.d   
+.configure --with-init-dir=/etc/init.d   
 
 echo -e "Running Make. This might take a few minutes..."
 make  
@@ -167,3 +161,5 @@ cp guacamole-auth-jdbc-${guacamole_version}/mysql/guacamole-auth-jdbc-mysql-${gu
 echo -e "Restarting tomcat..."
 
 service ${TOMCAT} restart
+
+
