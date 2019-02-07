@@ -1,52 +1,8 @@
 #!/bin/bash
 
-# ===================================================================
-# Purpose:      An automation script to install a Let's Encrypt SSL certificate into Nginx in support of Apache Guacamole.
-# Details:      This script automates the installation of a Let's Encrypt SSL certificate into Nginx.
-# Github:       https://github.com/jasonvriends
-# ===================================================================
-#
-# ./nginx-ssl-install.sh [(--help)] [(--ssl-email) string] [(--ssl-domain) string]
-#
-# Options:
-#
-# --help                     : Displays this help information.
-# --ssl-email string         : email address used for Let's Encrypt renewal reminders.
-# --ssl-domain string        : the domain name used to generate the certificate signing request.
-# 
-# Usage example(s): 
-#
-# ./nginx-ssl-install.sh --ssl-email johndoe@gmail.com --ssl-domain mydomain.com
-# ===================================================================
-
-# Define help function
-function help(){
-    echo "nginx-ssl-install.sh - An automation script to install a Let's Encrypt SSL certificate into Nginx in support of Apache Guacamole."
-    echo ""
-    echo "This script automates the installation of a Let's Encrypt SSL certificate into Nginx."
-    echo ""
-    echo "./nginx-ssl-install.sh [(--help)] [(--ssl-email) string] [(--ssl-domain) string]"
-    echo ""
-    echo "Options:"
-    echo "--help: Displays this help information."
-    echo "--ssl-email string: email address used for Let's Encrypt renewal reminders."
-    echo "--ssl-domain string: the domain name used to generate the certificate signing request."
-    echo ""
-    echo "Usage example:"
-    echo "./nginx-ssl-install.sh --ssl-email johndoe@gmail.com --ssl-domain mydomain.com"
-    exit 1
-}
-
-# Initalize variables.
-color_yellow='\033[1;33m'
-color_blue='\033[0;34m'
-color_red='\033[0;31m'
-color_green='\033[0;32m'
-color_none='\033[0m'
-
-# Verify exported variables
-if [ -z "$guacamole_version" ] || [ -z "$download_location" ] || [ -z "$script_path" ] [ -z "$download_path" ]; then
-    echo "$(date "+%F %T") ${color_red}exported variables from entrypoint.sh missing.${color_none}"
+# Verify the script is being called from entrypoint.sh
+if [ -z "$guacamole_version" ] || [ -z "$guacamole_location" ] || [ -z "$script_path" ]; then
+    echo "$(date "+%F %T") nginx-ssl-install must be called via entrypoint.sh."
     exit 1
 fi
 
@@ -67,15 +23,8 @@ done
 
 # Check for empty positional parameters
 if [ -z "$ssl_email" ] || [ -z "$ssl_domain" ]; then
-    echo "ERROR: --ssl-email and/or --ssl-domain empty."
     exit 1
 fi
-
-# Proceed with the installation of Apache Guacamole with the following options
-echo "$(date "+%F %T") nginx-ssl-install.sh executed with the following options:"
-echo "--ssl-email=$ssl_email"
-echo "--ssl-domain=$ssl_domain"
-echo ""
 
 # Certbot
 
@@ -117,7 +66,7 @@ echo "}" >> /etc/nginx/sites-available/apache-guacamole
 systemctl stop nginx
 
 ## Generate and Install a Let's Encrypt SSL certificate for Nginx
-certbot --nginx -n --email $ssl_email --domain $ssl_domain --agree-tos --redirect --hsts
+certbot --nginx -n --email "$ssl_email" --domain "$ssl_domain" --agree-tos --redirect --hsts
 
 ## Start Nginx
 systemctl start nginx

@@ -12,13 +12,12 @@
 # Github:       https://github.com/jasonvriends
 # ===================================================================
 #
-# entrypoint.sh [(--help)] [(--guacamole)] [(--guacamole-version string)] [(--nginx)] [(--ssl)] [(--ssl-email) string] [(--ssl-domain) string] [(--mysql)] [(--mysql-root-pwd) string] [(--mysql-db-name) string] [(--mysql-db-user) string] [(--mysql-db-user-pwd) string]
+# entrypoint.sh [(--help)] [(--guacamole)] [(--nginx)] [(--ssl)] [(--ssl-email) string] [(--ssl-domain) string] [(--mysql)] [(--mysql-root-pwd) string] [(--mysql-db-name) string] [(--mysql-db-user) string] [(--mysql-db-user-pwd) string]
 #
 # Options:
 #
 # --help                        : Displays this help information.
 # --guacamole                   : Installs Apache Guacamole.
-# --guacamole-version           : Specify the Apache Guacamole version (if not specified the default is 1.0.0).
 # --nginx                       : Installs nginx and fronts Apache Guacamole with a friendly url.
 # --ssl                         : Installs a Let's Encrypt SSL certificate into Nginx.
 #   --ssl-email string          : Email address used for Let's Encrypt renewal reminders.
@@ -61,7 +60,6 @@ function help(){
     echo -e "Options:"
     echo -e "--help: Displays this help information."
     echo -e "--guacamole: installs Apache Guacamole"
-    echo -e "--guacamole-version: Specify the Apache Guacamole version (if not specified the default is 1.0.0)."
     echo -e "--nginx: installs nginx and fronts Apache Guacamole with a friendly url."
     echo -e "--ssl: installs a Let's Encrypt SSL certificate on Nginx (requires Nginx option)."
     echo -e "  --ssl-email string: email address used for Let's Encrypt renewal reminders."
@@ -89,32 +87,25 @@ function help(){
 }
 
 # Initalize variables.
+echo -e "$(date "+%F %T") Initalize variables."
 nginx=0
 ssl=0
 mysql=0
 guacamole=0
 scripterror=0
-color_yellow='\033[1;33m'
-color_blue='\033[0;34m'
-color_red='\033[0;31m'
-color_green='\033[0;32m'
-color_none='\033[0m'
-export download_path=${pwd}
-export script_path="$( dirname "${BASH_SOURCE[0]}" )"
+
 export guacamole_version="1.0.0"
-export download_location="http://apache.org/dyn/closer.cgi?action=download&filename=guacamole/${guacamole_version}"
+export guacamole_location="http://apache.org/dyn/closer.cgi?action=download&filename=guacamole/${guacamole_version}"
+export script_path="$( dirname "${BASH_SOURCE[0]}" )"
 
 # Read script arguments
-echo -e "$(date "+%F %T") ${color_yellow}Read script arguments.${color_none}"
+echo -e "$(date "+%F %T") Read script arguments."
 
 while [ "$1" != "" ]; do
     case $1 in
         --help              )   help
                                 ;;
         --guacamole         )   guacamole=1
-                                ;;
-        --guacamole-version )   shift
-                                guacamole_version="$1"
                                 ;;
         --nginx             )   nginx=1
                                 ;;
@@ -144,82 +135,103 @@ while [ "$1" != "" ]; do
 done
 
 # Verification
-echo -e "$(date "+%F %T") ${color_yellow}Verification.${color_none}"
+echo -e "$(date "+%F %T") Verification."
 
 ## --nginx || --mysql || --guacamole
 if [ "$nginx" -eq "0" ] && [ "$mysql" -eq "0" ] && [ "$guacamole" -eq "0" ]; then
-    clear
+    echo -e "$(date "+%F %T") * --nginx || --mysql || --guacamole not specified, displaying help."
     help
 fi
 
-## nginx-install.sh present
-if [ ! -f $script_path/nginx-install.sh ]; then
-    echo -e "$(date "+%F %T") ${color_red}./nginx-install.sh not found.${color_none}"
-    scripterror=1
+## Nginx
+if [ "$nginx" -eq "1" ]; then
+
+    # check for nginx-install.sh
+    if [ ! -f $script_path/nginx-install.sh ]; then
+        echo -e "$(date "+%F %T") * --nginx specified. However, ./nginx-install.sh was not found!"
+        scripterror=1
+    fi
+
 fi
 
-## nginx-ssl-install.sh present
-if [ ! -f $script_path/nginx-ssl-install.sh ]; then
-    echo -e "$(date "+%F %T") ${color_red}./nginx-ssl-install.sh not found.${color_none}"
-    scripterror=1
-fi
-
-## mysql-install.sh present
-if [ ! -f $script_path/mysql-install.sh ]; then
-    echo -e "$(date "+%F %T") ${color_red}./mysql-install.sh not found.${color_none}"
-    scripterror=1
-fi
-
-## guacamole-install.sh present
-if [ ! -f $script_path/guacamole-install.sh ]; then
-    echo -e "$(date "+%F %T") ${color_red}./guacamole-install.sh not found.${color_none}"
-    scripterror=1
-fi
-
-## --ssl-email && --ssl-domain empty not empty with --ssl
+## Nginx + SSL
 if [ "$nginx" -eq "1" ] && [ "$ssl" -eq "1" ]; then
+
+    ## check for nginx-ssl-install.sh
+    if [ ! -f $script_path/nginx-ssl-install.sh ]; then
+        echo -e "$(date "+%F %T") * --ssl specified. However, ./nginx-ssl-install.sh was not found!"
+        scripterror=1
+    fi
+
+    ## check for empty positional parameters
     if [ -z "$ssl_email" ] || [ -z "$ssl_domain" ]; then
-        echo -e "$(date "+%F %T") ${color_red}--ssl specified but --ssl-email || --ssl-domain empty.${color_none}"
+        echo -e "$(date "+%F %T") * --ssl specified but --ssl-email || --ssl-domain empty."
         scripterror=1
     fi
+
 fi
 
-## --mysql-root-pwd && --mysql-db-name && --mysql-db-user && --mysql-db-user-pwd not empty with --mysql
+## mySQL
 if [ "$mysql" -eq "1" ]; then
-    if [ -z "$mysql_root_pwd" ] || [ -z "$mysql_db_name" ] || [ -z "$mysql_db_user" ] || [ -z "$mysql_db_user_pwd" ]; then
-        echo -e "$(date "+%F %T") ${color_red}--mysql specified but --mysql-root-pwd || --mysql-db-name || --mysql-db-user || --mysql-db-user-pwd empty.${color_none}"
+
+    ## check for mysql-install.sh
+    if [ ! -f $script_path/mysql-install.sh ]; then
+        echo -e "$(date "+%F %T") * --mysql specified. However, ./mysql-install.sh was not found!"
         scripterror=1
     fi
+
+    ## check for empty positional parameters
+    if [ -z "$mysql_root_pwd" ] || [ -z "$mysql_db_name" ] || [ -z "$mysql_db_user" ] || [ -z "$mysql_db_user_pwd" ]; then
+        echo -e "$(date "+%F %T") * --mysql specified but --mysql-root-pwd || --mysql-db-name || --mysql-db-user || --mysql-db-user-pwd empty."
+        scripterror=1
+    fi
+
 fi
 
-## Exit on any script errors
+## Apache Guacamole
+if [ "$guacamole" -eq "1" ]; then
+
+    ## check for guacamole-install.sh
+    if [ ! -f $script_path/guacamole-install.sh ]; then
+        echo -e "$(date "+%F %T") * --guacamole specified. However, ./guacamole-install.sh was not found!"
+        scripterror=1
+    fi
+
+fi
+
+## Check for failed verification
 if [ "$scripterror" -eq "1" ]; then
+    echo -e "$(date "+%F %T") * Verification failed."
     exit 1
+else
+    echo -e "$(date "+%F %T") * Verification passed."
 fi
  
 # Proceed with the installation of Apache Guacamole with the following options
-echo -e "$(date "+%F %T") ${color_green}entrypoint.sh${color_none} executed with the following options:"
-echo -e "$(date "+%F %T") --guacamole=${color_yellow}$guacamole${color_none}"
-echo -e "$(date "+%F %T") --nginx=${color_yellow}$nginx${color_none}"
-echo -e "$(date "+%F %T") --ssl=${color_yellow}$ssl${color_none}"
-echo -e "$(date "+%F %T")   --ssl-email=${color_yellow}$ssl_email${color_none}"
-echo -e "$(date "+%F %T")   --ssl-domain=${color_yellow}$ssl_domain${color_none}"
-echo -e "$(date "+%F %T") --mysql=${color_yellow}$mysql${color_none}"
-echo -e "$(date "+%F %T")   --mysql-root-pwd=${color_yellow}$mysql_root_pwd${color_none}"
-echo -e "$(date "+%F %T")   --mysql-db-name=${color_yellow}$mysql_db_name${color_none}"
-echo -e "$(date "+%F %T")   --mysql-db-user=${color_yellow}$mysql_db_user${color_none}"
-echo -e "$(date "+%F %T")   --mysql-db-user-pwd=${color_yellow}$mysql_db_user_pwd${color_none}"
+echo -e "$(date "+%F %T") entrypoint.sh executed with the following options:"
+echo -e "$(date "+%F %T") * --guacamole        =$guacamole"
+echo -e "$(date "+%F %T") * --nginx            =$nginx"
+echo -e "$(date "+%F %T") * --ssl              =$ssl"
+echo -e "$(date "+%F %T") * --ssl-email        =$ssl_email"
+echo -e "$(date "+%F %T") * --ssl-domain       =$ssl_domain"
+echo -e "$(date "+%F %T") * --mysql            =$mysql"
+echo -e "$(date "+%F %T") * --mysql-root-pwd   =$mysql_root_pwd"
+echo -e "$(date "+%F %T") * --mysql-db-name    =$mysql_db_name"
+echo -e "$(date "+%F %T") * --mysql-db-user    =$mysql_db_user"
+echo -e "$(date "+%F %T") * --mysql-db-user-pwd=$mysql_db_user_pwd"
+
+sleep 10 # give people time to see the options and cancel
 
 # Install Nginx
 if [ "$nginx" -eq "1" ]; then
-    echo -e "$(date "+%F %T") ${color_yellow}Installing Nginx.${color_none}"
+    echo -e "$(date "+%F %T") Installing Nginx."
     $script_path/nginx-install.sh
 fi
 
 # Install Let's Encrypt SSL certificate
 if [ "$nginx" -eq "1" ] && [ "$ssl" -eq "1" ]; then
 
-    echo -e "$(date "+%F %T") ${color_yellow}Installing Let's Encrypt SSL certificate.${color_none}"
+    echo -e "$(date "+%F %T") Installing Let's Encrypt SSL certificate."
     $script_path/nginx-ssl-install.sh --ssl-email "$ssl_email" --ssl-domain "$ssl_domain"
 
 fi
@@ -227,7 +239,7 @@ fi
 # Install mySQL
 if [ "$mysql" -eq "1" ]; then
     
-    echo -e "$(date "+%F %T") ${color_yellow}Installing mySQL.${color_none}"
+    echo -e "$(date "+%F %T") Installing mySQL."
     $script_path/mysql-install.sh --mysql-root-pwd "$mysql_root_pwd" --mysql-db-name "$mysql_db_name" --mysql-db-user "$mysql_db_user" --mysql-db-user-pwd "$mysql_db_user_pwd"
 
 fi
@@ -235,7 +247,7 @@ fi
 # Install Apache Guacamole
 if [ "$guacamole" -eq "1" ]; then
 
-    echo -e "$(date "+%F %T") ${color_yellow}Installing Apache Guacamole${color_none}"
+    echo -e "$(date "+%F %T") Installing Apache Guacamole"
     $script_path/guacamole-install.sh
 
 fi

@@ -1,57 +1,10 @@
 #!/bin/bash
 
-# ===================================================================
-# Purpose:      An automation script to install Apache Guacamole.
-# Details:      This script automates the installation of Apache Guacamole.
-# Github:       https://github.com/jasonvriends
-# ===================================================================
-# Options:
-#
-# --help                     : Displays this help information.
-# 
-# Usage example(s): 
-#
-# ./guacamole-install.sh
-# ===================================================================
-
-# Define help function
-function help(){
-    echo "guacamole-install.sh - An automation script to install Apache Guacamole."
-    echo ""
-    echo "This script automates the installation of Apache Guacamole."
-    echo ""
-    echo "guacamole-install.sh [(--help)]"
-    echo ""
-    echo "Options:"
-    echo "--help: Displays this help information."
-    echo ""
-    echo "Usage examples:"
-    echo ""
-    echo "./guacamole-install.sh"
-    exit 1
-}
-
-# Initalize variables.
-color_yellow='\033[1;33m'
-color_blue='\033[0;34m'
-color_red='\033[0;31m'
-color_green='\033[0;32m'
-color_none='\033[0m'
-
-# Verify exported variables
-if [ -z "$guacamole_version" ] || [ -z "$download_location" ] || [ -z "$script_path" ] [ -z "$download_path" ]; then
-    echo "$(date "+%F %T") ${color_red}exported variables from entrypoint.sh missing.${color_none}"
+# Verify the script is being called from entrypoint.sh
+if [ -z "$guacamole_version" ] || [ -z "$guacamole_location" ] || [ -z "$script_path" ]; then
+    echo "$(date "+%F %T") guacamole-install must be called via entrypoint.sh."
     exit 1
 fi
-
-# Read script arguments
-while [ "$1" != "" ]; do
-    case $1 in
-        --help )                help
-                                ;;
-    esac
-    shift
-done
 
 # Update package lists
 apt-get update
@@ -83,7 +36,7 @@ then
         LIBPNG="libpng12-dev"
     fi
 else
-    echo "$(date "+%F %T") ${color_red}Unsupported Distro - Ubuntu or Debian Only${color_none}."
+    echo "$(date "+%F %T") Unsupported Distro - Ubuntu or Debian Only."
     exit 1
 fi
 
@@ -110,18 +63,18 @@ ghostscript wget dpkg-dev
 
 # Download Apache Guacamole server
 if [ ! -f guacamole-server-${guacamole_version}.tar.gz ]; then
-    wget -q --show-progress -O guacamole-server-${guacamole_version}.tar.gz ${download_location}/source/guacamole-server-${guacamole_version}.tar.gz
+    wget -q --show-progress -O guacamole-server-${guacamole_version}.tar.gz ${guacamole_location}/source/guacamole-server-${guacamole_version}.tar.gz
     tar -xzf guacamole-server-${guacamole_version}.tar.gz
 fi
 
 # Download Apache Guacamole client
 if [ ! -f guacamole-${guacamole_version}.war ]; then
-    wget -q --show-progress -O guacamole-${guacamole_version}.war ${download_location}/source/guacamole-${guacamole_version}.war
+    wget -q --show-progress -O guacamole-${guacamole_version}.war ${guacamole_location}/source/guacamole-${guacamole_version}.war
 fi
 
 # Download authentication extension
 if [ ! -f guacamole-auth-jdbc-${guacamole_version}.tar.gz ]; then
-    wget -q --show-progress -O guacamole-auth-jdbc-${guacamole_version}.tar.gz ${download_location}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz
+    wget -q --show-progress -O guacamole-auth-jdbc-${guacamole_version}.tar.gz ${guacamole_location}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz
     tar -xzf guacamole-auth-jdbc-${guacamole_version}.tar.gz
 fi
 
@@ -142,7 +95,7 @@ make
 
 echo -e "Running Make Install..."
 make install
-cd..
+cd ..
 
 ldconfig
 systemctl enable guacd

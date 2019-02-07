@@ -1,57 +1,8 @@
 #!/bin/bash
 
-# ===================================================================
-# Purpose:      An automation script to install mySQL in support of Apache Guacamole.
-# Details:      This script automates the installation of mySQL.
-# Github:       https://github.com/jasonvriends
-# ===================================================================
-#
-# mysql-install.sh [(--help)] [(--mysql-root-pwd) string] [(--mysql-db-name) string] [(--mysql-db-user) string] [(--mysql-db-user-pwd) string]
-#
-# Options:
-#
-# --help                     : Displays this help information.
-# --mysql-root-pwd string    : the root mySQL password.
-# --mysql-db-name string     : mysql database to create for Apache Guacamole.
-# --mysql-db-user string     : mysql user to assign to the database.
-# --mysql-db-user-pwd string : mysql user password.
-# 
-# Usage example(s): 
-#
-#   ./mysql-install.sh --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2
-# ===================================================================
-
-# Define help function
-function help(){
-    echo "mysql-install.sh - An automation script to install mySQL in support of Apache Guacamole."
-    echo ""
-    echo "This script automates the installation of mySQL."
-    echo ""
-    echo "mysql-install.sh [(--help)] [(--mysql-root-pwd) string] [(--mysql-db-name) string] [(--mysql-db-user) string] [(--mysql-db-user-pwd) string]"
-    echo ""
-    echo "Options:"
-    echo "--help: Displays this help information."
-    echo "--mysql-root-pwd string    : the root mySQL password."
-    echo "--mysql-db-name string     : mysql database to create for Apache Guacamole."
-    echo "--mysql-db-user string     : mysql user to assign to the database."
-    echo "--mysql-db-user-pwd string : mysql user password."
-    echo ""
-    echo "Usage example(s):"
-    echo ""
-    echo "./mysql-install.sh --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2"
-    exit 1
-}
-
-# Initalize variables.
-color_yellow='\033[1;33m'
-color_blue='\033[0;34m'
-color_red='\033[0;31m'
-color_green='\033[0;32m'
-color_none='\033[0m'
-
-# Verify exported variables
-if [ -z "$guacamole_version" ] || [ -z "$download_location" ] || [ -z "$script_path" ] [ -z "$download_path" ]; then
-    echo "$(date "+%F %T") ${color_red}exported variables from entrypoint.sh missing.${color_none}"
+# Verify the script is being called from entrypoint.sh
+if [ -z "$guacamole_version" ] || [ -z "$guacamole_location" ] || [ -z "$script_path" ]; then
+    echo "$(date "+%F %T") mysql-install must be called via entrypoint.sh."
     exit 1
 fi
 
@@ -76,17 +27,9 @@ while [ "$1" != "" ]; do
     shift
 done
 
-# Proceed with the installation of Apache Guacamole with the following options
-echo "$(date "+%F %T") mysql-install.sh executed with the following options:"
-echo "--mysql-root-pwd=$mysql_root_pwd"
-echo "--mysql-db-name=$mysql_db_name"
-echo "--mysql-db-user=$mysql_db_user"
-echo "--mysql-db-user-pwd=$mysql_db_user_pwd"
-echo "";
-
 # Check for empty positional parameters
 if [ -z "$mysql_root_pwd" ] || [ -z "$mysql_db_name" ] || [ -z "$mysql_db_user" ] || [ -z "$mysql_db_user_pwd" ]; then
-    echo "$(date "+%F %T") ${color_red}--mysql-root-pwd and/or --mysql-db-name and/or --mysql-db-user and/or --mysql-db-user-pwd empty.${color_none}"
+    echo "$(date "+%F %T") --mysql-root-pwd and/or --mysql-db-name and/or --mysql-db-user and/or --mysql-db-user-pwd empty."
     exit 1
 fi
 
@@ -115,11 +58,11 @@ echo $sql_query | mysql -u root -p"$mysql_root_pwd"
 ### download jdbc authentication extension
 if [ ! -f guacamole-auth-jdbc-${guacamole_version}.tar.gz ]; then
 
-    wget -q --show-progress -O guacamole-auth-jdbc-${guacamole_version}.tar.gz ${download_location}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz
+    wget -q --show-progress -O guacamole-auth-jdbc-${guacamole_version}.tar.gz ${guacamole_location}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz
     if [ $? -ne 0 ]; then
-        echo "$(date "+%F %T") ${color_red}Failed to download guacamole-auth-jdbc-${guacamole_version}.tar.gz${color_none}"
-        echo "$(date "+%F %T") ${color_red}${download_location}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz${color_none}"
-        exit
+        echo "$(date "+%F %T") Failed to download guacamole-auth-jdbc-${guacamole_version}.tar.gz"
+        echo "$(date "+%F %T") ${guacamole_location}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz"
+        exit 1
     fi
 
 fi
@@ -131,7 +74,7 @@ tar -xzf guacamole-auth-jdbc-${guacamole_version}.tar.gz
 cat guacamole-auth-jdbc-${guacamole_version}/mysql/schema/*.sql | mysql -u root -p"$mysql_root_pwd" "$mysql_db_name"
 
 # Configure guacamole.properties
-mkdir /etc/guacamole
+mkdir -p /etc/guacamole
 echo "mysql-hostname: localhost" >> /etc/guacamole/guacamole.properties
 echo "mysql-port: 3306" >> /etc/guacamole/guacamole.properties
 echo "mysql-database: ${mysql_db_name}" >> /etc/guacamole/guacamole.properties
