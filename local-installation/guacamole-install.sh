@@ -134,7 +134,7 @@ echo -e "Building Guacamole with GCC $(gcc --version | head -n1 | grep -oP '\)\K
 cd guacamole-server-${guacamole_version}
 
 echo -e "Configuring..."
-.configure --with-init-dir=/etc/init.d   
+./configure --with-init-dir=/etc/init.d   
 
 echo -e "Running Make. This might take a few minutes..."
 make  
