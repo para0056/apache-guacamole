@@ -69,7 +69,7 @@ fi
 
 # Download Apache Guacamole client
 if [ ! -f guacamole-${guacamole_version}.war ]; then
-    wget -q --show-progress -O guacamole-${guacamole_version}.war ${guacamole_location}/source/guacamole-${guacamole_version}.war
+    wget -q --show-progress -O guacamole-${guacamole_version}.war ${guacamole_location}/binary/guacamole-${guacamole_version}.war
 fi
 
 # Download authentication extension
