@@ -66,7 +66,7 @@ if [ ! -f guacamole-server-${guacamole_version}.tar.gz ]; then
     wget -q --show-progress -O guacamole-server-${guacamole_version}.tar.gz ${guacamole_location}/source/guacamole-server-${guacamole_version}.tar.gz
     tar -xzf guacamole-server-${guacamole_version}.tar.gz
 fi
-
+ 
 # Download Apache Guacamole client
 if [ ! -f guacamole-${guacamole_version}.war ]; then
     wget -q --show-progress -O guacamole-${guacamole_version}.war ${guacamole_location}/binary/guacamole-${guacamole_version}.war

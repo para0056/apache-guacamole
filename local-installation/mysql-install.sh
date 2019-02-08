@@ -58,7 +58,7 @@ echo $sql_query | mysql -u root -p"$mysql_root_pwd"
 ### download jdbc authentication extension
 if [ ! -f guacamole-auth-jdbc-${guacamole_version}.tar.gz ]; then
     wget -q --show-progress -O guacamole-auth-jdbc-${guacamole_version}.tar.gz ${guacamole_location}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz
-fi
+fi 
 
 ### Extract database schema
 tar -xzf guacamole-auth-jdbc-${guacamole_version}.tar.gz
