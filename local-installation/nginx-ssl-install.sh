@@ -51,7 +51,7 @@ echo "    root /var/www/html;" >> /etc/nginx/sites-available/apache-guacamole
 echo "    index index.html index.htm index.nginx-debian.html;" >> /etc/nginx/sites-available/apache-guacamole
 echo "    server_name $ssl_domain;" >> /etc/nginx/sites-available/apache-guacamole
 echo "    location / {" >> /etc/nginx/sites-available/apache-guacamole
-echo "        proxy_pass http://localhost:8080/guacamole;" >> /etc/nginx/sites-available/apache-guacamole
+echo "        proxy_pass http://localhost:8080/guacamole/;" >> /etc/nginx/sites-available/apache-guacamole
 echo "        proxy_buffering off;" >> /etc/nginx/sites-available/apache-guacamole
 echo "        proxy_http_version 1.1;" >> /etc/nginx/sites-available/apache-guacamole
 echo "        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;" >> /etc/nginx/sites-available/apache-guacamole
