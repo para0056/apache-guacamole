@@ -220,7 +220,8 @@ echo -e "$(date "+%F %T") * --mysql-db-name    =$mysql_db_name"
 echo -e "$(date "+%F %T") * --mysql-db-user    =$mysql_db_user"
 echo -e "$(date "+%F %T") * --mysql-db-user-pwd=$mysql_db_user_pwd"
 
-sleep 10 # give people time to see the options and cancel
+echo -e "$(date "+%F %T") Starting install in 5 seconds...."
+sleep 5
 
 # Install Nginx
 if [ "$nginx" -eq "1" ]; then
