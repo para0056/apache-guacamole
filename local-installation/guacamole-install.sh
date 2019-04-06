@@ -99,6 +99,7 @@ cd ..
 
 ldconfig
 systemctl enable guacd
+service guacd start
 
 # Get build-folder
 BUILD_FOLDER=$(dpkg-architecture -qDEB_BUILD_GNU_TYPE)
