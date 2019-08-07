@@ -12,7 +12,7 @@ while [ "$1" != "" ]; do
         --help )                help
                                 ;;
         --mysql-hostname )      shift 
-                                mysql-hostname="$1"
+                                mysql_hostname="$1"
                                 ;;
         --mysql-db-name )       shift 
                                 mysql_db_name="$1"
@@ -24,20 +24,20 @@ while [ "$1" != "" ]; do
                                 mysql_db_user_pwd="$1"
                                 ;;
         --mysql-db-schema )   shift 
-                                mysql-db-schema="$1"
+                                mysql_db_schema="$1"
                                 ;;                                
     esac
     shift
 done
 
 # Check for empty positional parameters
-if [ -z "$mysql-hostname" ] || [ -z "$mysql_db_name" ] || [ -z "$mysql_db_user" ] || [ -z "$mysql_db_user_pwd" ] || [ -z "$mysql-db-schema" ]; then
+if [ -z "$mysql_hostname" ] || [ -z "$mysql_db_name" ] || [ -z "$mysql_db_user" ] || [ -z "$mysql_db_user_pwd" ] || [ -z "$mysql_db_schema" ]; then
     echo "$(date "+%F %T") --mysql-hostname and/or --mysql-db-name and/or --mysql-db-user and/or --mysql-db-user-pwd and/or --$mysql-db-schema."
     exit 1
 fi
 
 # Apply database schema
-if  [ ! -z "$mysql-db-schema" ]; then
+if  [ ! -z "$mysql_db_schema" ]; then
   sudo apt-get install mysql-client -y
 
   ## download jdbc authentication extension
@@ -49,12 +49,12 @@ if  [ ! -z "$mysql-db-schema" ]; then
   tar -xzf guacamole-auth-jdbc-${guacamole_version}.tar.gz
 
   ## Apply database schema
-  cat guacamole-auth-jdbc-${guacamole_version}/mysql/schema/*.sql | mysql -h $mysql-hostname -P 3306 -u "$mysql_db_user" -p"$mysql_db_user_pwd" "$mysql_db_name"
+  cat guacamole-auth-jdbc-${guacamole_version}/mysql/schema/*.sql | mysql -h "$mysql_hostname" -P 3306 -u "$mysql_db_user" -p"$mysql_db_user_pwd" "$mysql_db_name"
 fi
 
 # Apply database configuration to Apache Guacamole
 mkdir -p /etc/guacamole
-echo "mysql-hostname: localhost" >> /etc/guacamole/guacamole.properties
+echo "mysql-hostname: ${mysql_hostname}" >> /etc/guacamole/guacamole.properties
 echo "mysql-port: 3306" >> /etc/guacamole/guacamole.properties
 echo "mysql-database: ${mysql_db_name}" >> /etc/guacamole/guacamole.properties
 echo "mysql-username: ${mysql_db_user}" >> /etc/guacamole/guacamole.properties
