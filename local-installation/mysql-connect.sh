@@ -52,8 +52,6 @@ if  [ ! -z "$mysql-db-schema" ]; then
   cat guacamole-auth-jdbc-${guacamole_version}/mysql/schema/*.sql | mysql -h $mysql-hostname -P 3306 -u "$mysql_db_user" -p"$mysql_db_user_pwd" "$mysql_db_name"
 fi
 
-mysql -h mysql–instance1.123456789012.us-east-1.rds.amazonaws.com -P 3306 -u mymasteruser -p
-
 # Apply database configuration to Apache Guacamole
 mkdir -p /etc/guacamole
 echo "mysql-hostname: localhost" >> /etc/guacamole/guacamole.properties
