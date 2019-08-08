@@ -23,33 +23,38 @@ while [ "$1" != "" ]; do
         --mysql-db-user-pwd )   shift 
                                 mysql_db_user_pwd="$1"
                                 ;;
-        --mysql-db-schema )   shift 
-                                mysql_db_schema="$1"
-                                ;;                                
     esac
     shift
 done
 
 # Check for empty positional parameters
-if [ -z "$mysql_hostname" ] || [ -z "$mysql_db_name" ] || [ -z "$mysql_db_user" ] || [ -z "$mysql_db_user_pwd" ] || [ -z "$mysql_db_schema" ]; then
-    echo "$(date "+%F %T") --mysql-hostname and/or --mysql-db-name and/or --mysql-db-user and/or --mysql-db-user-pwd and/or --$mysql-db-schema."
+if [ -z "$mysql_hostname" ] || [ -z "$mysql_db_name" ] || [ -z "$mysql_db_user" ] || [ -z "$mysql_db_user_pwd" ]; then
+    echo "$(date "+%F %T") --mysql-hostname and/or --mysql-db-name and/or --mysql-db-user and/or --mysql-db-user-pwd."
     exit 1
 fi
 
+# Download jdbc authentication extension
+if [ ! -f guacamole-auth-jdbc-${guacamole_version}.tar.gz ]; then
+  wget -q --show-progress -O guacamole-auth-jdbc-${guacamole_version}.tar.gz ${guacamole_location}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz
+fi 
+
 # Apply database schema
-if  [ ! -z "$mysql_db_schema" ]; then
-  sudo apt-get install mysql-client -y
+sudo apt-get install mysql-client -y
 
-  ## download jdbc authentication extension
-  if [ ! -f guacamole-auth-jdbc-${guacamole_version}.tar.gz ]; then
-      wget -q --show-progress -O guacamole-auth-jdbc-${guacamole_version}.tar.gz ${guacamole_location}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz
-  fi 
+## Check if database schema is empty
+db_table=guacamole_user
+sql=$(printf 'SHOW TABLES LIKE "%s"' "$db_table")
+  
+if [[ $(mysql -h "$mysql_hostname" -P 3306 -u "$mysql_db_user" -p"$mysql_db_user_pwd" -e "$sql" "$mysql_db_name") ]]; then
+    echo "Database schema not empty... skipping schema"
+else
+    echo "Database schema empty... applying schema"
 
-  ## Extract database schema
-  tar -xzf guacamole-auth-jdbc-${guacamole_version}.tar.gz
+    ## Extract database schema
+    tar -xzf guacamole-auth-jdbc-${guacamole_version}.tar.gz
 
-  ## Apply database schema
-  cat guacamole-auth-jdbc-${guacamole_version}/mysql/schema/*.sql | mysql -h "$mysql_hostname" -P 3306 -u "$mysql_db_user" -p"$mysql_db_user_pwd" "$mysql_db_name"
+    ## Apply database schema
+    cat guacamole-auth-jdbc-${guacamole_version}/mysql/schema/*.sql | mysql -h "$mysql_hostname" -P 3306 -u "$mysql_db_user" -p"$mysql_db_user_pwd" "$mysql_db_name"
 fi
 
 # Apply database configuration to Apache Guacamole
