@@ -19,7 +19,7 @@
 #               [(--ssl-email) string]
 #               [(--ssl-domain) string] 
 #               [(--mysql-install)] [(--mysql-root-pwd) string] [(--mysql-db-name) string] [(--mysql-db-user) string] [(--mysql-db-user-pwd) string]
-#               [(--mysql-connect)] [(--mysql-hostname) string] [(--mysql-db-name) string] [(--mysql-db-user) string] [(--mysql-db-user-pwd) string] [(--mysql-db-schema) string]
+#               [(--mysql-connect)] [(--mysql-hostname) string] [(--mysql-db-name) string] [(--mysql-db-user) string] [(--mysql-db-user-pwd) string]
 #
 # Options:
 #
@@ -39,7 +39,6 @@
 #   --mysql-db-name string      : mySql database name.
 #   --mysql-db-user string      : mySql user name.
 #   --mysql-db-user-pwd string  : mySql user password.
-#   --mysql-db-schema string    : install Apache Guacamole database schema
 # 
 # Usage example(s): 
 #
@@ -75,7 +74,7 @@ function help(){
     echo -e "              [(--ssl-email) string]"
     echo -e "              [(--ssl-domain) string]" 
     echo -e "              [(--mysql-install)] [(--mysql-root-pwd) string] [(--mysql-db-name) string] [(--mysql-db-user) string] [(--mysql-db-user-pwd) string]"
-    echo -e "              [(--mysql-connect)] [(--mysql-hostname) string] [(--mysql-db-name) string] [(--mysql-db-user) string] [(--mysql-db-user-pwd) string] [(--mysql-db-schema) string]"
+    echo -e "              [(--mysql-connect)] [(--mysql-hostname) string] [(--mysql-db-name) string] [(--mysql-db-user) string] [(--mysql-db-user-pwd) string]"
     echo -e ""
     echo -e "Options:"
     echo -e "--help: Displays this help information."
@@ -94,7 +93,6 @@ function help(){
     echo -e "  --mysql-db-name string      : mySql database name."
     echo -e "  --mysql-db-user string      : mySql user name."
     echo -e "  --mysql-db-user-pwd string  : mySql user password."
-    echo -e "  --mysql-db-schema string    : install Apache Guacamole database schema"
     echo -e ""
     echo -e "Usage examples:"
     echo -e ""
@@ -159,9 +157,6 @@ while [ "$1" != "" ]; do
         --mysql-connect     )   mysql=2 ;;
         --mysql-hostname    )   shift 
                                 mysql_hostname="$1"
-                                ;;
-        --mysql-db-schema     )   shift 
-                                mysql_db_schema="$1"
                                 ;;
     esac
     shift
@@ -231,8 +226,8 @@ if [ "$mysql" -eq "2" ]; then
     fi
 
     ## check for empty positional parameters
-    if [ -z "$mysql_hostname" ] || [ -z "$mysql_db_name" ] || [ -z "$mysql_db_user" ] || [ -z "$mysql_db_user_pwd" ] || [ -z "$mysql_db_schema" ]; then
-        echo -e "$(date "+%F %T") * --mysql specified but --mysql-root-pwd || --mysql-db-name || --mysql-db-user || --mysql-db-user-pwd || --mysql_db_schema empty."
+    if [ -z "$mysql_hostname" ] || [ -z "$mysql_db_name" ] || [ -z "$mysql_db_user" ] || [ -z "$mysql_db_user_pwd" ]; then
+        echo -e "$(date "+%F %T") * --mysql specified but --mysql-root-pwd || --mysql-db-name || --mysql-db-user || --mysql-db-user-pwd."
         scripterror=1
     fi
 
@@ -270,7 +265,6 @@ echo -e "$(date "+%F %T") * --mysql-db-name    =$mysql_db_name"
 echo -e "$(date "+%F %T") * --mysql-db-user    =$mysql_db_user"
 echo -e "$(date "+%F %T") * --mysql-db-user-pwd=$mysql_db_user_pwd"
 echo -e "$(date "+%F %T") * --mysql-hostname   =$mysql_hostname"
-echo -e "$(date "+%F %T") * --mysql-db-schema  =$mysql_db_schema"
 echo -e ""
 echo -e "$(date "+%F %T") Starting install in 5 seconds...."
 sleep 5
@@ -301,7 +295,7 @@ fi
 if [ "$mysql" -eq "2" ]; then
     
     echo -e "$(date "+%F %T") Installing mySQL."
-    $script_path/mysql-connect.sh --mysql-hostname "$mysql_hostname" --mysql-db-name "$mysql_db_name" --mysql-db-user "$mysql_db_user" --mysql-db-user-pwd "$mysql_db_user_pwd" --mysql-db-schema "$mysql_db_schema"
+    $script_path/mysql-connect.sh --mysql-hostname "$mysql_hostname" --mysql-db-name "$mysql_db_name" --mysql-db-user "$mysql_db_user" --mysql-db-user-pwd "$mysql_db_user_pwd"
 
 fi
 
