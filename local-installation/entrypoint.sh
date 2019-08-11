@@ -215,6 +215,11 @@ echo -e ""
 echo -e "$(date "+%F %T") Starting install in 5 seconds...."
 sleep 5
 
+# Make directories 
+mkdir -p /etc/guacamole
+mkdir -p /etc/guacamole/lib
+mkdir -p /etc/guacamole/extensions
+
 # Install Nginx
 if [ "$nginx" -eq "1" ]; then
     echo -e "$(date "+%F %T") Installing Nginx."
