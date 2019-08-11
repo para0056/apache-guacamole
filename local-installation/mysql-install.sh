@@ -68,7 +68,6 @@ cp guacamole-auth-jdbc-${guacamole_version}/mysql/guacamole-auth-jdbc-mysql-${gu
 cat guacamole-auth-jdbc-${guacamole_version}/mysql/schema/*.sql | mysql -u root -p"$mysql_root_pwd" "$mysql_db_name"
 
 # Configure Apache Guacamole to use JDBC extension
-mkdir -p /etc/guacamole
 echo "mysql-hostname: localhost" >> /etc/guacamole/guacamole.properties
 echo "mysql-port: 3306" >> /etc/guacamole/guacamole.properties
 echo "mysql-database: ${mysql_db_name}" >> /etc/guacamole/guacamole.properties
