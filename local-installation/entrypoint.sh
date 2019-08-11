@@ -1,71 +1,18 @@
 #!/bin/bash
 
 # ===================================================================
-# Purpose:      An automation script for Apache Guacamole and its required components.
-# Details:      This script automates the installation of the following components:
-#                    - Nginx (reverse proxy for Apache Guacamole)
-#                    - Certbot (client used to obtain a Let's Encrypt SSL certificate for Nginx)
-#                    - MySQL (one of many possible databases compatible with Apache Guacamole)
-#                    - Tomcat (used to host the Apache Guacamole client/web front end)
-#                    - Guacd (the server component of Apache Guacamole)
-#                    - Various other dependencies
-# Github:       https://github.com/jasonvriends
-# ===================================================================
-#
-# entrypoint.sh [(--help)] 
-#               [(--guacamole)] 
-#               [(--nginx)] 
-#               [(--ssl)] 
-#               [(--ssl-email) string]
-#               [(--ssl-domain) string] 
-#               [(--mysql-install)] [(--mysql-root-pwd) string] [(--mysql-db-name) string] [(--mysql-db-user) string] [(--mysql-db-user-pwd) string]
-#               [(--mysql-connect)] [(--mysql-hostname) string] [(--mysql-db-name) string] [(--mysql-db-user) string] [(--mysql-db-user-pwd) string]
-#
-# Options:
-#
-# --help                        : Displays this help information.
-# --guacamole                   : Installs Apache Guacamole.
-# --nginx                       : Installs nginx and fronts Apache Guacamole with a friendly url.
-# --ssl                         : Installs a Let's Encrypt SSL certificate into Nginx.
-#   --ssl-email string          : Email address used for Let's Encrypt renewal reminders.
-#   --ssl-domain string         : The domain name used to generate the certificate signing request.
-# --mysql-install               : Installs mySQL for database authentication, load balancing groups, and web-based administration.
-#   --mysql-root-pwd string     : The root mySQL password.
-#   --mysql-db-name string      : mySql database to create for Apache Guacamole.
-#   --mysql-db-user string      : mySql user to assign to the database.
-#   --mysql-db-user-pwd string  : mySql user password.
-# --mysql-connect               : Configures Apache Guacamole to connect to an existing mySQL database.
-#   --mysql-hostname string     : mySQL hostname.
-#   --mysql-db-name string      : mySql database name.
-#   --mysql-db-user string      : mySql user name.
-#   --mysql-db-user-pwd string  : mySql user password.
-# 
-# Usage example(s): 
-#
-# Apache Guacamole: standalone
-# ./entrypoint.sh --guacamole"
-#
-# Apache Guacamole: standalone + mySQL authentication)
-# ./entrypoint.sh --guacamole --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2
-#
-# Apache Guacamole: Nginx + mySQL authentication
-# ./entrypoint.sh --guacamole --nginx --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2
-#
-# Apache Guacamole: Nginx + Let's Encrypt SSL + mySQL authentication
-# ./entrypoint.sh --guacamole --nginx --ssl --ssl-email address@domain.com --ssl-domain domain.com --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2
+# Purpose:      An automation script for a local install of Apache Guacamole.
+# Github:       https://github.com/jasonvriends/apache-guacamole
 # ===================================================================
 
-# Define help function
+# Global Variables
+export guacamole_version="1.0.0"
+export guacamole_location="http://apache.org/dyn/closer.cgi?action=download&filename=guacamole/${guacamole_version}"
+export script_path="$( dirname "${BASH_SOURCE[0]}" )"
+
+# Syntax/Help
 function help(){
-    echo -e "entrypoint.sh - An automation script for installing Apache Guacamole and its required components."
-    echo -e ""
-    echo -e "This script automates the installation of the following components:"
-    echo -e "- Nginx (reverse proxy for Apache Guacamole)"
-    echo -e "- Certbot (client used to obtain a Let's Encrypt SSL certificate for Nginx)"
-    echo -e "- MySQL (one of many possible databases compatible with Apache Guacamole)"
-    echo -e "- Tomcat (used to host the Apache Guacamole client/web front end)"
-    echo -e "- Guacd (the server component of Apache Guacamole)"
-    echo -e "- Various other dependencies"
+    echo -e "entrypoint.sh - An automation script for a local install of Apache Guacamole."
     echo -e ""
     echo -e "entrypoint.sh [(--help)]"
     echo -e "              [(--guacamole)]"
@@ -83,7 +30,7 @@ function help(){
     echo -e "--ssl: installs a Let's Encrypt SSL certificate on Nginx (requires Nginx option)."
     echo -e "  --ssl-email string: email address used for Let's Encrypt renewal reminders."
     echo -e "  --ssl-domain string: the domain name used to generate the certificate signing request."
-    echo -e "--mysql: installs mySQL for database authentication, load balancing groups, and web-based administration."
+    echo -e "--mysql-install: installs mySQL for database authentication, load balancing groups, and web-based administration."
     echo -e "  --mysql-root-pwd string: the root mySQL password."
     echo -e "  --mysql-db-name string: mysql database to create for Apache Guacamole."
     echo -e "  --mysql-db-user string: mysql user to assign to the database."
@@ -96,17 +43,20 @@ function help(){
     echo -e ""
     echo -e "Usage examples:"
     echo -e ""
-    echo -e "Apache Guacamole: standalone"
+    echo -e "Standalone installation"
     echo -e "./entrypoint.sh --guacamole"
     echo -e ""
-    echo -e "Apache Guacamole: standalone + mySQL authentication)"
-    echo -e "./entrypoint.sh --guacamole --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2"
+    echo -e "Apache Guacamole + [local mySQL]"
+    echo -e "./entrypoint.sh --guacamole --mysql-install --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2"
     echo -e ""
-    echo -e "Apache Guacamole: Nginx + mySQL authentication"
-    echo -e "./entrypoint.sh --guacamole --nginx --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2"
+    echo -e "Apache Guacamole + [local mySQL] + [Nginx]"
+    echo -e "./entrypoint.sh --guacamole --mysql-install --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2"
     echo -e ""
-    echo -e "Apache Guacamole: Nginx + Let's Encrypt SSL + mySQL authentication"
-    echo -e "./entrypoint.sh --guacamole --nginx --ssl --ssl-email address@domain.com --ssl-domain domain.com --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2"
+    echo -e "Apache Guacamole + [local mySQL] + [Nginx] + [Let's Encrypt SSL]"
+    echo -e "./entrypoint.sh --guacamole --nginx --ssl --ssl-email address@domain.com --ssl-domain domain.com --mysql-install --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2"
+    echo -e ""
+    echo -e "Apache Guacamole + [remote mySQL] + [Nginx] + [Let's Encrypt SSL]"
+    echo -e "./entrypoint.sh --guacamole --nginx --ssl --ssl-email address@domain.com --ssl-domain domain.com --mysql-connect --mysql-hostname database.domain.com --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2"
     exit 1
 }
 
@@ -117,10 +67,6 @@ ssl=0
 mysql=0
 guacamole=0
 scripterror=0
-
-export guacamole_version="1.0.0"
-export guacamole_location="http://apache.org/dyn/closer.cgi?action=download&filename=guacamole/${guacamole_version}"
-export script_path="$( dirname "${BASH_SOURCE[0]}" )"
 
 # Read script arguments
 echo -e "$(date "+%F %T") Read script arguments."
