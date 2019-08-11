@@ -73,6 +73,7 @@ if [ ! -f guacamole-${guacamole_version}.war ]; then
 fi
 
 # Make directories 
+mkdir -p /etc/guacamole
 mkdir -p /etc/guacamole/lib
 mkdir -p /etc/guacamole/extensions
 
