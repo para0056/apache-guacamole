@@ -33,24 +33,24 @@ if [ -z "$mysql_hostname" ] || [ -z "$mysql_db_name" ] || [ -z "$mysql_db_user" 
     exit 1
 fi
 
-# Install JDBC authentication extension
-
-## Download
-if [ ! -f guacamole-auth-jdbc-${guacamole_version}.tar.gz ]; then
-  wget -q --show-progress -O guacamole-auth-jdbc-${guacamole_version}.tar.gz ${guacamole_location}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz
-fi 
-
-## Extract
-tar -xzf guacamole-auth-jdbc-${guacamole_version}.tar.gz
-
 # Install mySQL client
 sudo apt-get install mysql-client -y
 
-# Apply Apache Guacamole database schema
+# Install JDBC extension
+
+## Download extension
+if [ ! -f guacamole-auth-jdbc-${guacamole_version}.tar.gz ]; then
+    wget -q --show-progress -O guacamole-auth-jdbc-${guacamole_version}.tar.gz ${guacamole_location}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz
+    tar -xzf guacamole-auth-jdbc-${guacamole_version}.tar.gz
+fi 
+
+## Copy extension into /etc/guacamole/extensions
+cp guacamole-auth-jdbc-${guacamole_version}/mysql/guacamole-auth-jdbc-mysql-${guacamole_version}.jar /etc/guacamole/extensions/1guacamole-auth-jdbc-mysql-${guacamole_version}.jar
+
+## Apply database schema
 cat guacamole-auth-jdbc-${guacamole_version}/mysql/schema/*.sql | mysql -h "$mysql_hostname" -P 3306 -u "$mysql_db_user" -p"$mysql_db_user_pwd" "$mysql_db_name"
 
-# Apply database configuration to Apache Guacamole
-mkdir -p /etc/guacamole
+# Configure Apache Guacamole to use JDBC extension
 echo "mysql-hostname: ${mysql_hostname}" >> /etc/guacamole/guacamole.properties
 echo "mysql-port: 3306" >> /etc/guacamole/guacamole.properties
 echo "mysql-database: ${mysql_db_name}" >> /etc/guacamole/guacamole.properties
