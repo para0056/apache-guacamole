@@ -50,7 +50,7 @@ function help(){
     echo -e "./entrypoint.sh --guacamole --mysql-install --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2"
     echo -e ""
     echo -e "Apache Guacamole + [local mySQL] + [Nginx]"
-    echo -e "./entrypoint.sh --guacamole --mysql-install --mysql --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2"
+    echo -e "./entrypoint.sh --guacamole --mysql-install --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2"
     echo -e ""
     echo -e "Apache Guacamole + [local mySQL] + [Nginx] + [Let's Encrypt SSL]"
     echo -e "./entrypoint.sh --guacamole --nginx --ssl --ssl-email address@domain.com --ssl-domain domain.com --mysql-install --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2"
@@ -150,13 +150,13 @@ if [ "$mysql" -eq "1" ]; then
 
     ## check for mysql-install.sh
     if [ ! -f $script_path/mysql-install.sh ]; then
-        echo -e "$(date "+%F %T") * --mysql specified. However, ./mysql-install.sh was not found!"
+        echo -e "$(date "+%F %T") * --mysql-install specified. However, ./mysql-install.sh was not found!"
         scripterror=1
     fi
 
     ## check for empty positional parameters
     if [ -z "$mysql_root_pwd" ] || [ -z "$mysql_db_name" ] || [ -z "$mysql_db_user" ] || [ -z "$mysql_db_user_pwd" ]; then
-        echo -e "$(date "+%F %T") * --mysql specified but --mysql-root-pwd || --mysql-db-name || --mysql-db-user || --mysql-db-user-pwd empty."
+        echo -e "$(date "+%F %T") * --mysql-install specified but --mysql-root-pwd || --mysql-db-name || --mysql-db-user || --mysql-db-user-pwd empty."
         scripterror=1
     fi
 
@@ -167,13 +167,13 @@ if [ "$mysql" -eq "2" ]; then
 
     ## check for mysql-connect.sh
     if [ ! -f $script_path/mysql-connect.sh ]; then
-        echo -e "$(date "+%F %T") * --mysql specified. However, ./mysql-connect.sh was not found!"
+        echo -e "$(date "+%F %T") * --mysql-connect specified. However, ./mysql-connect.sh was not found!"
         scripterror=1
     fi
 
     ## check for empty positional parameters
     if [ -z "$mysql_hostname" ] || [ -z "$mysql_db_name" ] || [ -z "$mysql_db_user" ] || [ -z "$mysql_db_user_pwd" ]; then
-        echo -e "$(date "+%F %T") * --mysql specified but --mysql-root-pwd || --mysql-db-name || --mysql-db-user || --mysql-db-user-pwd."
+        echo -e "$(date "+%F %T") * --mysql-connect specified but --mysql-root-pwd || --mysql-db-name || --mysql-db-user || --mysql-db-user-pwd."
         scripterror=1
     fi
 
