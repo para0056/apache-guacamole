@@ -72,11 +72,6 @@ if [ ! -f guacamole-${guacamole_version}.war ]; then
     wget -q --show-progress -O guacamole-${guacamole_version}.war ${guacamole_location}/binary/guacamole-${guacamole_version}.war
 fi
 
-# Make directories 
-mkdir -p /etc/guacamole
-mkdir -p /etc/guacamole/lib
-mkdir -p /etc/guacamole/extensions
-
 # Install guacd
 echo -e "Building Guacamole with GCC $(gcc --version | head -n1 | grep -oP '\)\K.*' | awk '{print $1}') "
 cd guacamole-server-${guacamole_version}
