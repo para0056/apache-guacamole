@@ -72,12 +72,6 @@ if [ ! -f guacamole-${guacamole_version}.war ]; then
     wget -q --show-progress -O guacamole-${guacamole_version}.war ${guacamole_location}/binary/guacamole-${guacamole_version}.war
 fi
 
-# Download authentication extension
-if [ ! -f guacamole-auth-jdbc-${guacamole_version}.tar.gz ]; then
-    wget -q --show-progress -O guacamole-auth-jdbc-${guacamole_version}.tar.gz ${guacamole_location}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz
-    tar -xzf guacamole-auth-jdbc-${guacamole_version}.tar.gz
-fi
-
 # Make directories 
 mkdir -p /etc/guacamole/lib
 mkdir -p /etc/guacamole/extensions
@@ -91,7 +85,6 @@ echo -e "Configuring..."
 
 echo -e "Running Make. This might take a few minutes..."
 make  
-
 
 echo -e "Running Make Install..."
 make install
@@ -109,7 +102,6 @@ mv guacamole-${guacamole_version}.war /etc/guacamole/guacamole.war
 ln -s /etc/guacamole/guacamole.war /var/lib/${TOMCAT}/webapps/
 ln -s /usr/local/lib/freerdp/guac*.so /usr/lib/${BUILD_FOLDER}/freerdp/
 ln -s /usr/share/java/mysql-connector-java.jar /etc/guacamole/lib/
-cp guacamole-auth-jdbc-${guacamole_version}/mysql/guacamole-auth-jdbc-mysql-${guacamole_version}.jar /etc/guacamole/extensions/
 
 # restart tomcat
 echo -e "Restarting tomcat..."
