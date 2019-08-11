@@ -53,22 +53,21 @@ echo $sql_query | mysql -u root -p"$mysql_root_pwd"
 sql_query="GRANT SELECT,INSERT,UPDATE,DELETE ON $mysql_db_name.* TO $mysql_db_user@localhost; flush privileges;"
 echo $sql_query | mysql -u root -p"$mysql_root_pwd"
 
-## apply database schema
+# Install JDBC extension
 
-### download jdbc extension
+## Download extension
 if [ ! -f guacamole-auth-jdbc-${guacamole_version}.tar.gz ]; then
     wget -q --show-progress -O guacamole-auth-jdbc-${guacamole_version}.tar.gz ${guacamole_location}/binary/guacamole-auth-jdbc-${guacamole_version}.tar.gz
     tar -xzf guacamole-auth-jdbc-${guacamole_version}.tar.gz
 fi 
 
-### Copy jdbc extension into correct folder
+## Copy extension into /etc/guacamole/extensions
 cp guacamole-auth-jdbc-${guacamole_version}/mysql/guacamole-auth-jdbc-mysql-${guacamole_version}.jar /etc/guacamole/extensions/1guacamole-auth-jdbc-mysql-${guacamole_version}.jar
 
 ### Apply database schema
 cat guacamole-auth-jdbc-${guacamole_version}/mysql/schema/*.sql | mysql -u root -p"$mysql_root_pwd" "$mysql_db_name"
 
-# Configure guacamole.properties
-mkdir -p /etc/guacamole
+# Configure Apache Guacamole to use JDBC extension
 echo "mysql-hostname: localhost" >> /etc/guacamole/guacamole.properties
 echo "mysql-port: 3306" >> /etc/guacamole/guacamole.properties
 echo "mysql-database: ${mysql_db_name}" >> /etc/guacamole/guacamole.properties
