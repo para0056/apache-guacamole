@@ -50,7 +50,7 @@ function help(){
     echo -e "./entrypoint.sh --guacamole --mysql-install --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2"
     echo -e ""
     echo -e "Apache Guacamole + [local mySQL] + [Nginx]"
-    echo -e "./entrypoint.sh --guacamole --mysql-install --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2"
+    echo -e "./entrypoint.sh --guacamole --nginx --mysql-install --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2"
     echo -e ""
     echo -e "Apache Guacamole + [local mySQL] + [Nginx] + [Let's Encrypt SSL]"
     echo -e "./entrypoint.sh --guacamole --nginx --ssl --ssl-email address@domain.com --ssl-domain domain.com --mysql-install --mysql-root-pwd password1 --mysql-db-name guacamole_db --mysql-db-user guacamole_usr --mysql-db-user-pwd password2"
