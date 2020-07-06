@@ -6,7 +6,7 @@
 # ===================================================================
 
 # Global Variables
-export guacamole_version="1.0.0"
+export guacamole_version="1.2.0"
 export guacamole_location="http://apache.org/dyn/closer.cgi?action=download&filename=guacamole/${guacamole_version}"
 export script_path="$( dirname "${BASH_SOURCE[0]}" )"
 
